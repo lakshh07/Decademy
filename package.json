@@ -1,0 +1,33 @@
+{
+  "name": "@web3-starter-kit/monorepo",
+  "version": "1.0.0",
+  "license": "MIT",
+  "private": true,
+  "author": "Lakshay Maini",
+  "keywords": [
+    "ethereum",
+    "react",
+    "hardhat",
+    "rainbow",
+    "polygon",
+    "uniswap",
+    "workspaces",
+    "yarn"
+  ],
+  "scripts": {
+    "react-app:build": "yarn workspace @web3-starter-kit/react-app build",
+    "react-app:start": "yarn workspace @web3-starter-kit/react-app run start",
+    "build": "yarn workspace @web3-starter-kit/react-app build",
+    "start": "yarn workspace @web3-starter-kit/react-app run start",
+    "fork": "yarn workspace @web3-starter-kit/hardhat fork",
+    "node": "yarn workspace @web3-starter-kit/hardhat chain",
+    "test": "yarn workspace @web3-starter-kit/hardhat test",
+    "compile": "yarn workspace @web3-starter-kit/hardhat compile",
+    "deploy": "yarn workspace @web3-starter-kit/hardhat deploy",
+    "verify": "yarn workspace @web3-starter-kit/hardhat verify"
+  },
+  "workspaces": [
+    "packages/*"
+  ],
+  "dependencies": {}
+}

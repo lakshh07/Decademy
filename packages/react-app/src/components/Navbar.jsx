@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Flex, Heading, Link, Text } from "@chakra-ui/react";
+import { Container, Flex, Heading, Link, Text } from "@chakra-ui/react";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { useAccount } from "wagmi";
@@ -26,84 +26,107 @@ function Navbar() {
 
   return (
     <>
-      <Flex
-        px={"4em"}
-        py={"0.7em"}
-        alignItems={"center"}
-        justifyContent={"space-between"}
-        className={"glass-ui"}
-        borderRadius={"50px"}
-        overflow={"hidden"}
+      <Container
+        maxW={"1400px"}
+        px={"2em"}
+        pt={"1.5em"}
+        position={"sticky"}
+        top={"0"}
+        zIndex={"9999999999"}
       >
-        <Link href="/" _hover={{ textDecoration: "none" }}>
-          <Flex alignItems={"center"}>
-            <Heading
-              ml={"15px"}
-              fontWeight={700}
-              className={"h-shadow-black"}
-              fontFamily={"Philosopher !important"}
-            >
-              🦄 decademy
-            </Heading>
-          </Flex>
-        </Link>
+        <Flex
+          px={"4em"}
+          py={"0.7em"}
+          alignItems={"center"}
+          justifyContent={"space-between"}
+          className={"glass-ui"}
+          borderRadius={"50px"}
+          overflow={"hidden"}
+        >
+          <Link href="/" _hover={{ textDecoration: "none" }}>
+            <Flex alignItems={"center"}>
+              <Heading
+                ml={"15px"}
+                fontWeight={700}
+                className={"h-shadow-black"}
+                fontFamily={"Philosopher !important"}
+              >
+                🦄 decademy
+              </Heading>
+            </Flex>
+          </Link>
 
-        {location.pathname === "/" ||
-        location.pathname === "/membership" ? null : (
-          <Flex alignItems={"center"}>
-            <NavLink _hover={{ textDecoration: "none" }} to="/courses">
-              <Text
-                fontSize={"1.125rem"}
-                lineHeight={"1.625rem"}
-                mr={"1em"}
-                transition="color 0.2s ease"
-                _hover={{ color: "gray", transition: "color 0.2s ease" }}
-                fontWeight={
-                  location.pathname === "/courses" ||
-                  location.pathname == "/courses/[id]"
-                    ? 600
-                    : 400
-                }
+          {location.pathname === "/" ||
+          location.pathname === "/membership" ? null : (
+            <Flex alignItems={"center"}>
+              <NavLink _hover={{ textDecoration: "none" }} to="/courses">
+                <Text
+                  fontSize={"1.125rem"}
+                  lineHeight={"1.625rem"}
+                  mr={"1em"}
+                  transition="color 0.2s ease"
+                  className="glass-gradient"
+                  fontWeight={
+                    location.pathname === "/dashboard" ||
+                    location.pathname == "/courses/[id]"
+                      ? 600
+                      : 400
+                  }
+                >
+                  Dashboard
+                </Text>
+              </NavLink>
+              <NavLink
+                to="/quests"
+                _hover={{ textDecoration: "none" }}
+                style={navLinkStyles}
               >
-                Courses
-              </Text>
-            </NavLink>
-            <NavLink
-              to="/quests"
-              _hover={{ textDecoration: "none" }}
-              style={navLinkStyles}
-            >
-              <Text
-                fontSize={"1.125rem"}
-                lineHeight={"1.625rem"}
-                mx={"1em"}
-                color={"black"}
-                transition="color 0.2s ease"
-                _hover={{ color: "gray", transition: "color 0.2s ease" }}
+                <Text
+                  fontSize={"1.125rem"}
+                  lineHeight={"1.625rem"}
+                  mx={"1em"}
+                  transition="color 10.2s ease"
+                  className="glass-gradient"
+                >
+                  Quests
+                </Text>
+              </NavLink>
+              <NavLink
+                to={`/community`}
+                _hover={{ textDecoration: "none" }}
+                style={navLinkStyles}
               >
-                Quests
-              </Text>
-            </NavLink>
-            <NavLink
-              to={`/profile/${address}`}
-              _hover={{ textDecoration: "none" }}
-              style={navLinkStyles}
-            >
-              <Text
-                fontSize={"1.125rem"}
-                lineHeight={"1.625rem"}
-                ml={"1em"}
-                transition="color 0.2s ease"
-                _hover={{ color: "gray", transition: "color 0.2s ease" }}
+                <Text
+                  fontSize={"1.125rem"}
+                  lineHeight={"1.625rem"}
+                  mx={"1em"}
+                  transition="color 0.2s ease"
+                  className="glass-gradient"
+                >
+                  Community
+                </Text>
+              </NavLink>
+              <NavLink
+                to={`/profile/${address}`}
+                _hover={{ textDecoration: "none" }}
+                style={navLinkStyles}
               >
-                Profile
-              </Text>
-            </NavLink>
-          </Flex>
-        )}
+                <Text
+                  fontSize={"1.125rem"}
+                  lineHeight={"1.625rem"}
+                  ml={"1em"}
+                  transition="color 0.2s ease"
+                  className="glass-gradient"
+                >
+                  Profile
+                </Text>
+              </NavLink>
+            </Flex>
+          )}
 
-        <ConnectButton />
-      </Flex>
+          <ConnectButton />
+        </Flex>
+      </Container>
     </>
   );
 }

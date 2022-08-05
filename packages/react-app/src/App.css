@@ -13,7 +13,7 @@ a {
 
 * {
   box-sizing: border-box;
-  font-family: "Montserrat", sans-serif;
+  font-family: "Montserrat", sans-serif !important;
 }
 
 .h-shadow-black {
@@ -35,9 +35,46 @@ a {
   -webkit-backdrop-filter: blur(5.5px);
   color: white;
 }
+.glass-ui-black {
+  background: rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(5.5px);
+  -webkit-backdrop-filter: blur(5.5px);
+  color: white;
+}
+.glass-container {
+  border: 1px solid hsla(0, 0%, 100%, 0.15);
+  /* background-color: hsla(0, 0%, 100%, 0.15); */
+  backdrop-filter: blur(10px);
+  box-shadow: rgba(232, 232, 255, 0.2) 0px 7px 29px 0px;
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.glass-gradient:hover {
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-image: url(./assets/gradient.jpeg);
+  background-size: 300% 300%;
+  background-size: cover;
+  background-repeat: no-repeat;
+  /* animation: 10s ease-in-out 0s infinite normal none running benDQH; */
+}
+
+@keyframes benDQH {
+  0% {
+    background-position: 0% 0%;
+  }
+
+  50% {
+    background-position: 100% 100%;
+  }
+
+  100% {
+    background-position: 0% 0%;
+  }
+}
 
 .hero-bg {
-  background-image: url("./assets/bg2.png");
+  background-image: url("./assets/bg3.png");
   background-size: cover;
   background-position: right top;
   background-repeat: no-repeat;

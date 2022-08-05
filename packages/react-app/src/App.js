@@ -3,9 +3,10 @@ import "./css/loading.css";
 import React, { useState } from "react";
 import { Route, Routes } from "react-router-dom";
 import LoadingContext from "./context/loading";
-import Hero from "./components/Hero";
-import Quests from "./components/Quests";
+import Hero from "./pages/Hero";
+import Quests from "./pages/quests/Quests";
 import Loading from "./components/Loading";
+import { Box } from "@chakra-ui/react";
 
 function App() {
   const [loading, setLoading] = useState(true);
@@ -13,10 +14,12 @@ function App() {
     <>
       <LoadingContext.Provider value={{ loading, setLoading }}>
         <Loading />
-        <Routes>
-          <Route path="/" element={<Hero />} />
-          <Route path="/quests" element={<Quests />} />
-        </Routes>
+        <Box className="body-bg">
+          <Routes>
+            <Route path="/" element={<Hero />} />
+            <Route path="/quests" element={<Quests />} />
+          </Routes>
+        </Box>
       </LoadingContext.Provider>
     </>
   );

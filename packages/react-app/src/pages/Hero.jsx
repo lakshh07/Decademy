@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Box, Button, Container, Flex, Heading } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import { useLoadingContext } from "../context/loading";
-import Navbar from "./Navbar";
+import Navbar from "../components/Navbar";
 
 function Hero() {
   const { setLoading } = useLoadingContext();
@@ -39,12 +39,14 @@ function Hero() {
           title="hero"
         ></iframe>
       </Box>
+
       <Box className="hero-bg" h={"100vh"} w={"100%"} align={"center"}>
+        <Navbar />
         <Container
           pt={"1.5em"}
           maxW={"1400px"}
           mx={"auto"}
-          h={"87vh"}
+          h={"79vh"}
           px={"2rem"}
           position={"relative"}
           top={"0"}
@@ -53,7 +55,6 @@ function Hero() {
           justifyContent={"center"}
           align={"center"}
         >
-          <Navbar />
           <Flex
             flexDirection={"column"}
             alignItems={"center"}

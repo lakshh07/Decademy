@@ -1,27 +1,24 @@
-import logo from "./logo.svg";
 import "./App.css";
-import { ConnectButton } from "@rainbow-me/rainbowkit";
+import "./css/loading.css";
+import React, { useState } from "react";
+import { Route, Routes } from "react-router-dom";
+import LoadingContext from "./context/loading";
+import Hero from "./components/Hero";
+import Quests from "./components/Quests";
+import Loading from "./components/Loading";
 
 function App() {
+  const [loading, setLoading] = useState(true);
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-
-        <ConnectButton />
-      </header>
-    </div>
+    <>
+      <LoadingContext.Provider value={{ loading, setLoading }}>
+        <Loading />
+        <Routes>
+          <Route path="/" element={<Hero />} />
+          <Route path="/quests" element={<Quests />} />
+        </Routes>
+      </LoadingContext.Provider>
+    </>
   );
 }
 

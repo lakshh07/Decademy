@@ -1,19 +1,20 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import "./index.css";
-import App from "./App";
+import "@rainbow-me/rainbowkit/styles.css";
 import reportWebVitals from "./reportWebVitals";
+import App from "./App";
+import { BrowserRouter } from "react-router-dom";
+import { Buffer } from "buffer";
 import { ChakraProvider } from "@chakra-ui/react";
 import { WagmiConfig } from "wagmi";
-import "@rainbow-me/rainbowkit/styles.css";
-import { RainbowKitProvider } from "@rainbow-me/rainbowkit";
+import { RainbowKitProvider, lightTheme } from "@rainbow-me/rainbowkit";
 import { wagmiClient, chains } from "./helpers/rainbowSetup";
-import { Buffer } from "buffer";
 
 window.Buffer = Buffer;
 
 const appInfo = {
-  appName: "🦄Web3 Starter Kit",
+  appName: "🦄Decademy",
 };
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
@@ -25,9 +26,18 @@ root.render(
         coolMode
         appInfo={appInfo}
         chains={chains}
+        theme={lightTheme({
+          accentColor: "white",
+          accentColorForeground: "#5b2f93",
+          borderRadius: "medium",
+          fontStack: "system",
+          overlayBlur: "small",
+        })}
       >
         <ChakraProvider>
-          <App />
+          <BrowserRouter>
+            <App />
+          </BrowserRouter>
         </ChakraProvider>
       </RainbowKitProvider>
     </WagmiConfig>

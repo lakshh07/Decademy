@@ -24,6 +24,7 @@ import { GrMoney } from "react-icons/gr";
 import { useNavigate } from "react-router-dom";
 import gradiant from "../../assets/gradiant.png";
 import matic from "../../assets/matic.svg";
+import notFound from "../../assets/page-not-found.png";
 
 import { useContractRead, useSigner, useWaitForTransaction } from "wagmi";
 // import { questsAddress } from "../../../utils/contractAddress";
@@ -105,8 +106,27 @@ function Courses() {
 
   //   isSuccess && setHash("");
   // }, [isSuccess, isLoading]);
-  const loading = false;
-  const fetchData = [{ questName: "nd" }];
+  const loading = true;
+  const fetchData = [
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+    {},
+  ];
 
   return (
     <>
@@ -117,18 +137,18 @@ function Courses() {
           <Flex alignItems={"center"} justifyContent={"space-between"}>
             <Flex alignItems={"center"}>
               <Heading
-                fontSize={"2.25rem"}
+                fontSize={"2.1rem"}
                 color={"white"}
                 lineHeight={"2.5rem"}
               >
                 Quests
               </Heading>
               <Heading
-                w={"2rem"}
+                w={"1.6rem"}
                 alignItems={"center"}
                 justifyContent={"center"}
-                fontSize={"1.2rem"}
-                lineHeight={"2rem"}
+                fontSize={"1rem"}
+                lineHeight={"1.6rem"}
                 bg={"white"}
                 color={"black"}
                 textAlign={"center"}
@@ -158,8 +178,8 @@ function Courses() {
 
           {loading ? (
             <>
-              <Flex my="10rem" justifyContent="center" alignItems="center">
-                <Spinner size="xl" />
+              <Flex my="12rem" justifyContent="center" alignItems="center">
+                <Spinner color="white" size="xl" />
               </Flex>
             </>
           ) : fetchData?.length ? (
@@ -426,8 +446,13 @@ function Courses() {
                 flexDir="column"
                 alignItems="center"
               >
-                <Image src={""} height={100} width={100} />
-                <Heading fontSize="1.5em" fontWeight={500} pt="1em">
+                <Image src={notFound} height={90} width={90} />
+                <Heading
+                  fontSize="1.3em"
+                  fontWeight={500}
+                  color={"white"}
+                  pt="1em"
+                >
                   No Quests Found
                 </Heading>
               </Flex>

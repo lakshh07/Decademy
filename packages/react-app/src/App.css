@@ -64,14 +64,22 @@ input {
   -webkit-backdrop-filter: blur(10px);
 }
 
+.glass-gradient-box:hover {
+  background-image: url(./assets/gradient.jpeg);
+  background-position: 0% 0%;
+  background-size: cover contain;
+  background-repeat: no-repeat;
+  animation: 4s ease-in-out 0s infinite normal none running benDQH;
+}
+
 .glass-gradient:hover {
   background-clip: text;
   -webkit-text-fill-color: transparent;
   background-image: url(./assets/gradient.jpeg);
-  background-size: 300% 300%;
+  background-position: 0% 0%;
   background-size: cover;
   background-repeat: no-repeat;
-  /* animation: 10s ease-in-out 0s infinite normal none running benDQH; */
+  animation: 8s ease-in-out 0s infinite normal none running benDQH;
 }
 
 @keyframes benDQH {
@@ -108,6 +116,9 @@ input {
   background-size: 300% 300%;
   -webkit-text-fill-color: transparent;
   animation: 30s ease-in-out 0s infinite normal none running benDQH;
+}
+.text-transparent {
+  -webkit-text-fill-color: white !important;
 }
 .hero-span::before {
   display: block;

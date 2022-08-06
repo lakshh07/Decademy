@@ -11,7 +11,7 @@ task("accounts", "Prints the list of accounts", async (taskArgs, hre) => {
 });
 
 module.exports = {
-  solidity: "0.8.10",
+  solidity: "0.8.15",
   defaultNetwork: "mumbai",
   networks: {
     hardhat: {
@@ -35,7 +35,7 @@ module.exports = {
     },
   },
   abiExporter: {
-    path: "../next-app/contracts/ABI",
+    path: "../react-app/src/contracts/ABI",
     runOnCompile: true,
     clear: true,
     flat: true,

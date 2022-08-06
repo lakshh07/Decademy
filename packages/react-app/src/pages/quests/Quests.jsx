@@ -27,8 +27,8 @@ import matic from "../../assets/matic.svg";
 import notFound from "../../assets/page-not-found.png";
 
 import { useContractRead, useSigner, useWaitForTransaction } from "wagmi";
-// import { questsAddress } from "../../../utils/contractAddress";
-// import questContractAbi from "../../../contracts/ABI/Quests.json";
+import { questsAddress } from "../../utils/contractAddress";
+import questContractAbi from "../../contracts/ABI/Quests.json";
 import { ethers } from "ethers";
 
 function Courses() {
@@ -47,86 +47,63 @@ function Courses() {
     // console.log(fetchData);
   }, []);
 
-  // const {
-  //   data: fetchData,
-  //   isError: fetchIsError,
-  //   isFetching,
-  //   isLoading: loading,
-  // } = useContractRead({
-  //   addressOrName: questsAddress,
-  //   contractInterface: questContractAbi,
-  //   functionName: "fetchQuest",
-  //   watch: true,
-  // });
+  const {
+    data: fetchData,
+    isFetching,
+    isLoading: loading,
+  } = useContractRead({
+    addressOrName: questsAddress,
+    contractInterface: questContractAbi,
+    functionName: "fetchQuest",
+    watch: true,
+  });
 
-  // useEffect(() => {
-  //   setLength(fetchData?.length);
-  // }, [isFetching]);
+  useEffect(() => {
+    setLength(fetchData?.length);
+  }, [isFetching]);
 
   async function fund(price, questId, numId) {
-    // const contract = new ethers.Contract(
-    //   questsAddress,
-    //   questContractAbi,
-    //   signer
-    // );
-    // let overrides = {
-    //   value: price,
-    // };
-    // const result = await contract.fundQuest(questId, numId, overrides);
-    // console.log(result.hash);
-    // setHash(result.hash);
+    const contract = new ethers.Contract(
+      questsAddress,
+      questContractAbi,
+      signer
+    );
+    let overrides = {
+      value: price,
+    };
+    const result = await contract.fundQuest(questId, numId, overrides);
+    console.log(result.hash);
+    setHash(result.hash);
   }
 
-  // const { data, isError, isLoading, isFetched, isSuccess } =
-  //   useWaitForTransaction({
-  //     hash: hash,
-  //   });
+  const { isLoading, isSuccess } = useWaitForTransaction({
+    hash: hash,
+  });
 
-  // useEffect(() => {
-  //   isLoading &&
-  //     toast({
-  //       title: "Transaction Sent",
-  //       description: hash,
-  //       status: "info",
-  //       duration: 4000,
-  //       isClosable: true,
-  //       position: "top",
-  //       variant: "subtle",
-  //     });
+  useEffect(() => {
+    isLoading &&
+      toast({
+        title: "Transaction Sent",
+        description: hash,
+        status: "info",
+        duration: 4000,
+        isClosable: true,
+        position: "bottom-right",
+        variant: "subtle",
+      });
 
-  //   isSuccess &&
-  //     toast({
-  //       title: "Transaction Successfull",
-  //       status: "success",
-  //       duration: 3000,
-  //       isClosable: true,
-  //       position: "top",
-  //       variant: "subtle",
-  //     });
+    isSuccess &&
+      toast({
+        title: "Transaction Successfull",
+        status: "success",
+        duration: 3000,
+        isClosable: true,
+        position: "bottom-right",
+        variant: "subtle",
+      });
 
-  //   isSuccess && setHash("");
-  // }, [isSuccess, isLoading]);
-  const loading = true;
-  const fetchData = [
-    {},
-    {},
-    {},
-    {},
-    {},
-    {},
-    {},
-    {},
-    {},
-    {},
-    {},
-    {},
-    {},
-    {},
-    {},
-    {},
-    {},
-    {},
-  ];
+    isSuccess && setHash("");
+  }, [isSuccess, isLoading]);
 
   return (
     <>
@@ -195,7 +172,6 @@ function Courses() {
                       <Box
                         borderWidth={"2px"}
                         borderColor={"whitesmoke"}
-                        // borderColor={"rgb(10 10 10/1)"}
                         borderRadius={"0.625rem"}
                         overflow={"hidden"}
                         cursor={"pointer"}
@@ -204,7 +180,6 @@ function Courses() {
                         backgroundColor={"white"}
                         transition={"transform 0.2s cubic-bezier(0.4, 0, 1, 1)"}
                         _hover={{
-                          // backgroundColor: "rgb(248,248,248)",
                           transform: "scale(1.02)",
                           transition:
                             "transform 0.2s cubic-bezier(0.4, 0, 1, 1)",
@@ -216,11 +191,10 @@ function Courses() {
                           borderBottomWidth={"2px"}
                         >
                           <Image
-                            // alt={list.questName}
+                            alt={list.questName}
                             objectFit={"cover"}
                             src={gradiant}
                             h={"100%"}
-                            // opacity={"0.4"}
                             w={"100%"}
                           />
                         </Box>
@@ -246,8 +220,7 @@ function Courses() {
                             lineHeight={"2rem"}
                             color={"#1a202c"}
                           >
-                            {/* {list.questName} */}
-                            Talk more about Web3
+                            {list.questName}
                           </Heading>
                           <Text
                             fontSize={"0.875rem"}
@@ -256,7 +229,7 @@ function Courses() {
                             mt={"0.5rem"}
                             mb={"1em"}
                           >
-                            {/* {list.questDescription} */}
+                            {list.questDescription}
                           </Text>
 
                           <Flex
@@ -284,9 +257,9 @@ function Courses() {
                               </Text>
                             </Flex>
                             <Text fontWeight={600} textTransform={"capitalize"}>
-                              {/* {ethers.utils.formatEther(
+                              {ethers.utils.formatEther(
                                 list.questPrice.toString()
-                              )}{" "} */}
+                              )}{" "}
                               Matic
                             </Text>
                           </Flex>
@@ -309,7 +282,7 @@ function Courses() {
                               overflow={"hidden"}
                             >
                               <Blockies
-                                // seed={list.uploader}
+                                seed={list.uploader}
                                 color="#dfe"
                                 bgcolor="#aaa"
                                 default="-1"
@@ -323,8 +296,7 @@ function Courses() {
                               lineHeight={"1rem"}
                               fontWeight={600}
                             >
-                              {/* {truncateMiddle(list.uploader || "", 5, 4, "...")} */}
-                              d
+                              {truncateMiddle(list.uploader || "", 5, 4, "...")}
                             </Text>
                           </Flex>
 
@@ -332,12 +304,11 @@ function Courses() {
                             my={"1.7rem"}
                             size="xs"
                             hasStripe
-                            value={50}
-                            // value={
-                            //   (list.questAmountRaised.toString() /
-                            //     list.questGoal.toString()) *
-                            //   100
-                            // }
+                            value={
+                              (list.questAmountRaised.toString() /
+                                list.questGoal.toString()) *
+                              100
+                            }
                             borderRadius={"20px"}
                             colorScheme={"purple"}
                           />
@@ -357,9 +328,9 @@ function Courses() {
                                   mr={"5px"}
                                   fontSize={"17px"}
                                 >
-                                  {/* {ethers.utils.formatEther(
+                                  {ethers.utils.formatEther(
                                     list.questAmountRaised.toString()
-                                  )} */}
+                                  )}
                                 </Text>
                                 <Image w="75px" src={matic} />
                               </Flex>
@@ -374,9 +345,9 @@ function Courses() {
                                   mr={"5px"}
                                   fontSize={"17px"}
                                 >
-                                  {/* {ethers.utils.formatEther(
+                                  {ethers.utils.formatEther(
                                     list.questGoal.toString()
-                                  )} */}
+                                  )}
                                 </Text>
                                 <Image w="80px" src={matic} />
                               </Flex>
@@ -388,44 +359,42 @@ function Courses() {
                           <Flex
                             justifyContent={"space-between"}
                             alignItems={"center"}
-                            // borderColor={"rgb(10 10 10/1)"}
                             borderTopWidth={"2px"}
                             py={"1rem"}
                             px={"2rem"}
                             bg={"rgba(250, 229, 195,1)"}
-                            // onClick={() =>
-                            //   list.questAmountRaised.toString() ===
-                            //   list.questGoal.toString()
-                            //     ? toast({
-                            //         title: "Funded",
-                            //         status: "info",
-                            //         duration: 4000,
-                            //         isClosable: true,
-                            //         position: "top",
-                            //         variant: "subtle",
-                            //       })
-                            //     : fund(
-                            //         list.questPrice.toString(),
-                            //         list.questId,
-                            //         list.id
-                            //       )
-                            // }
-                            // cursor={
-                            //   list.questAmountRaised.toString() ===
-                            //   list.questGoal.toString()
-                            //     ? "not-allowed"
-                            //     : "pointer"
-                            // }
+                            onClick={() =>
+                              list.questAmountRaised.toString() ===
+                              list.questGoal.toString()
+                                ? toast({
+                                    title: "Funded",
+                                    status: "info",
+                                    duration: 4000,
+                                    isClosable: true,
+                                    position: "top",
+                                    variant: "subtle",
+                                  })
+                                : fund(
+                                    list.questPrice.toString(),
+                                    list.questId,
+                                    list.id
+                                  )
+                            }
+                            cursor={
+                              list.questAmountRaised.toString() ===
+                              list.questGoal.toString()
+                                ? "not-allowed"
+                                : "pointer"
+                            }
                           >
                             <Flex alignItems={"center"}>
                               {" "}
                               <HiOutlineCash />
                               <Text ml={"5px"} fontWeight={600}>
-                                {/* {list.questAmountRaised.toString() ===
+                                {list.questAmountRaised.toString() ===
                                 list.questGoal.toString()
                                   ? "Funded"
-                                  : "Fund"} */}
-                                Fund
+                                  : "Fund"}
                               </Text>
                             </Flex>
 

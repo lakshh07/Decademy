@@ -21,6 +21,7 @@
     "react-scripts": "5.0.1",
     "react-useanimations": "^2.0.8",
     "truncate-middle": "^1.0.6",
+    "uuid": "^8.3.2",
     "wagmi": "^0.6.0",
     "web-vitals": "^2.1.4"
   },

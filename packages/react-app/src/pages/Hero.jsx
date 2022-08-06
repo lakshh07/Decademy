@@ -6,7 +6,7 @@ import Navbar from "../components/Navbar";
 
 function Hero() {
   const { setLoading } = useLoadingContext();
-  const [visible, setVisible] = useState(false);
+  const [visible, setVisible] = useState(true);
   const navigate = useNavigate();
 
   function parallax(e) {
@@ -93,7 +93,7 @@ function Hero() {
                 display={visible ? "block" : "none"}
                 onClick={() => {
                   setLoading(true);
-                  navigate("/membership");
+                  navigate("/quests");
                 }}
               >
                 Gets Started

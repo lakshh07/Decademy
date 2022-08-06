@@ -32,11 +32,11 @@ function Navbar() {
         pt={"1.5em"}
         position={"sticky"}
         top={"0"}
-        zIndex={"9999999999"}
+        zIndex={"99999"}
       >
         <Flex
           px={"4em"}
-          py={"0.7em"}
+          py={"0.5em"}
           alignItems={"center"}
           justifyContent={"space-between"}
           className={"glass-ui"}
@@ -50,6 +50,7 @@ function Navbar() {
                 fontWeight={700}
                 className={"h-shadow-black"}
                 fontFamily={"Philosopher !important"}
+                fontSize={"2em"}
               >
                 🦄 decademy
               </Heading>
@@ -61,7 +62,7 @@ function Navbar() {
             <Flex alignItems={"center"}>
               <NavLink _hover={{ textDecoration: "none" }} to="/courses">
                 <Text
-                  fontSize={"1.125rem"}
+                  fontSize={"1rem"}
                   lineHeight={"1.625rem"}
                   mr={"1em"}
                   transition="color 0.2s ease"
@@ -82,7 +83,7 @@ function Navbar() {
                 style={navLinkStyles}
               >
                 <Text
-                  fontSize={"1.125rem"}
+                  fontSize={"1rem"}
                   lineHeight={"1.625rem"}
                   mx={"1em"}
                   transition="color 10.2s ease"
@@ -97,7 +98,7 @@ function Navbar() {
                 style={navLinkStyles}
               >
                 <Text
-                  fontSize={"1.125rem"}
+                  fontSize={"1rem"}
                   lineHeight={"1.625rem"}
                   mx={"1em"}
                   transition="color 0.2s ease"
@@ -112,7 +113,7 @@ function Navbar() {
                 style={navLinkStyles}
               >
                 <Text
-                  fontSize={"1.125rem"}
+                  fontSize={"1rem"}
                   lineHeight={"1.625rem"}
                   ml={"1em"}
                   transition="color 0.2s ease"

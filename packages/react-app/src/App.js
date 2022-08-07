@@ -13,6 +13,8 @@ import Courses from "./pages/courses/Courses";
 import Course from "./pages/courses/Course";
 import ViewCourse from "./pages/courses/ViewCourse";
 import ViewRequest from "./pages/courses/ViewRequest";
+import NewCourse from "./pages/courses/NewCourse";
+import NewRequest from "./pages/courses/NewRequest";
 
 function App() {
   const [loading, setLoading] = useState(true);
@@ -37,6 +39,12 @@ function App() {
             <Route
               path="/dashboard/courses/:id/requests/:reqId"
               element={<ViewRequest />}
+            />
+
+            <Route path="/dashboard/courses/new" element={<NewCourse />} />
+            <Route
+              path="/dashboard/courses/:id/requests/new"
+              element={<NewRequest />}
             />
           </Routes>
         </Box>

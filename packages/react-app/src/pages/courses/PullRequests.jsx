@@ -47,12 +47,13 @@ function PullRequests({ setLoading, id, requests }) {
 
         <Button
           borderWidth={"2px"}
-          borderColor={"rgb(10 10 10/1)"}
+          borderColor={"white"}
           borderRadius={"0.625rem"}
-          bg={"rgb(10 10 10/1)"}
+          bg={"white"}
+          color={"black"}
           py={"0.375rem"}
           px={"1rem"}
-          colorScheme={"black"}
+          colorScheme={"white"}
           onClick={() => {
             setLoading(true);
             navigate(`/dashboard/courses/${id}/requests/new`);
@@ -161,12 +162,13 @@ function PullRequests({ setLoading, id, requests }) {
                 </Box>
                 <Button
                   borderWidth={"2px"}
-                  borderColor={"rgb(10 10 10/1)"}
+                  borderColor={"white"}
                   borderRadius={"0.625rem"}
-                  bg={"rgb(10 10 10/1)"}
+                  bg={"white"}
+                  color={"black"}
                   py={"0.375rem"}
                   px={"1rem"}
-                  colorScheme={"black"}
+                  colorScheme={"white"}
                   onClick={() => {
                     setLoading(true);
                     navigate(`/dashboard/courses/${id}/requests/${index}`);

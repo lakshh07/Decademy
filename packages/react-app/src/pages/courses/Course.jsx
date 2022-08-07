@@ -327,7 +327,11 @@ function Course() {
                         key={index}
                         className={"glass-ui"}
                       >
-                        <Heading fontWeight={500} fontSize={"24px"}>
+                        <Heading
+                          color={"white"}
+                          fontWeight={500}
+                          fontSize={"24px"}
+                        >
                           {list.name}
                         </Heading>
                         <Text fontSize={"16px"} mt={"10px"} color={"#ededed"}>
@@ -341,12 +345,13 @@ function Course() {
                 {hasEnrolled ? (
                   <Button
                     borderWidth={"2px"}
-                    borderColor={"rgb(10 10 10/1)"}
+                    borderColor={"white"}
                     borderRadius={"0.625rem"}
-                    bg={"rgb(10 10 10/1)"}
+                    bg={"white"}
+                    color={"black"}
                     py={"0.375rem"}
                     px={"1rem"}
-                    colorScheme={"black"}
+                    colorScheme={"white"}
                     mt={"2em"}
                     onClick={() => {
                       setLoading(true);
@@ -360,12 +365,13 @@ function Course() {
                 ) : (
                   <Button
                     borderWidth={"2px"}
-                    borderColor={"rgb(10 10 10/1)"}
+                    borderColor={"white"}
                     borderRadius={"0.625rem"}
-                    bg={"rgb(10 10 10/1)"}
+                    bg={"white"}
+                    color={"black"}
                     py={"0.375rem"}
                     px={"1rem"}
-                    colorScheme={"black"}
+                    colorScheme={"white"}
                     mt={"2em"}
                     onClick={() => write()}
                     isLoading={enrolling}

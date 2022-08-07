@@ -108,12 +108,13 @@ function Courses() {
             </Flex>
             <Button
               borderWidth={"2px"}
-              borderColor={"rgb(10 10 10/1)"}
+              borderColor={"white"}
               borderRadius={"0.625rem"}
-              bg={"rgb(10 10 10/1)"}
+              bg={"white"}
               py={"0.375rem"}
               px={"1rem"}
-              colorScheme={"black"}
+              color={"black"}
+              colorScheme={"white"}
               onClick={() => {
                 setLoading(true);
                 navigate("/dashboard/courses/new");

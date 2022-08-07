@@ -35,7 +35,7 @@ input {
 }
 
 .glass-ui {
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.2) !important;
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   color: white;

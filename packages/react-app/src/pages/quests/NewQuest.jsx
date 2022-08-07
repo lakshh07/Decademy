@@ -112,7 +112,7 @@ function NewQuest() {
     isSuccess &&
       setTimeout(() => {
         setLoading(true);
-        navigate("/quests");
+        navigate("/dashboard/quests");
       }, 4000);
   }, [isSuccess, isLoading, setQuestData, toast]);
 

@@ -146,7 +146,7 @@ function Courses() {
               colorScheme={"black"}
               onClick={() => {
                 setLoading(true);
-                navigate("/quests/new");
+                navigate("/dashboard/quests/new");
               }}
             >
               New Quest

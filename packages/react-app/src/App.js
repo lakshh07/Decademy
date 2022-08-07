@@ -25,8 +25,8 @@ function App() {
         <Box className="body-bg">
           <Routes>
             <Route path="/" element={<Hero />} />
-            <Route path="/quests" element={<Quests />} />
-            <Route path="/quests/new" element={<NewQuest />} />
+            <Route path="/dashboard/quests" element={<Quests />} />
+            <Route path="/dashboard/quests/new" element={<NewQuest />} />
 
             <Route path="dashboard" element={<Dashboard />} />
 

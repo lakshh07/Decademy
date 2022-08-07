@@ -11,6 +11,7 @@ import Navbar from "../components/Navbar";
 import { useLoadingContext } from "../context/loading";
 import learning from "../assets/learning.png";
 import influencer from "../assets/influencer.png";
+import bulb from "../assets/light-bulb.png";
 import { Link } from "react-router-dom";
 
 function Dashboard() {
@@ -85,6 +86,31 @@ function Dashboard() {
                     className={"hero-quotes text-transparent"}
                   >
                     Podcasts
+                  </Heading>
+                </Box>
+              </GridItem>
+            </Link>
+            <Link to="/dashboard/quests">
+              <GridItem>
+                <Box
+                  className="glass-ui-2 glass-gradient-box"
+                  p={"1.5em"}
+                  transform={"scale(1)"}
+                  transition={"transform 0.2s cubic-bezier(0.4, 0, 1, 1)"}
+                  _hover={{
+                    transform: "scale(1.02)",
+                    transition: "transform 0.2s cubic-bezier(0.4, 0, 1, 1)",
+                  }}
+                >
+                  <Image boxSize={"200px"} src={bulb} />
+                  <Heading
+                    fontSize={"1.5rem"}
+                    lineHeight={"2.5rem"}
+                    fontWeight={"500"}
+                    mt={"2em"}
+                    className={"hero-quotes text-transparent"}
+                  >
+                    Quests
                   </Heading>
                 </Box>
               </GridItem>

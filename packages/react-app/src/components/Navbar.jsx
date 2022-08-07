@@ -20,7 +20,7 @@ function Navbar() {
 
   const navLinkStyles = ({ isActive }) => {
     return {
-      fontWeight: isActive ? "600" : "400",
+      fontWeight: isActive ? "700" : "400",
     };
   };
 
@@ -60,7 +60,7 @@ function Navbar() {
           {location.pathname === "/" ||
           location.pathname === "/membership" ? null : (
             <Flex alignItems={"center"}>
-              <NavLink _hover={{ textDecoration: "none" }} to="/courses">
+              <NavLink _hover={{ textDecoration: "none" }} to="/dashboard">
                 <Text
                   fontSize={"1rem"}
                   lineHeight={"1.625rem"}
@@ -69,8 +69,8 @@ function Navbar() {
                   className="glass-gradient"
                   fontWeight={
                     location.pathname === "/dashboard" ||
-                    location.pathname == "/courses/[id]"
-                      ? 600
+                    location.pathname == "/dashboard/*"
+                      ? 700
                       : 400
                   }
                 >

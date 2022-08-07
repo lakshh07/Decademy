@@ -70,6 +70,7 @@ input {
   background-size: cover contain;
   background-repeat: no-repeat;
   animation: 4s ease-in-out 0s infinite normal none running benDQH;
+  cursor: pointer;
 }
 
 .glass-gradient:hover {

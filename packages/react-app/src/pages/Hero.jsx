@@ -84,16 +84,17 @@ function Hero() {
             <Box mt={"2em"} align={"center"}>
               <Button
                 borderWidth={"2px"}
-                borderColor={"rgb(10 10 10/1)"}
+                borderColor={"white"}
                 borderRadius={"0.625rem"}
-                bg={"rgb(10 10 10/1)"}
+                bg={"white"}
+                color={"black"}
                 py={"0.375rem"}
                 px={"1rem"}
-                colorScheme={"black"}
+                colorScheme={"white"}
                 display={visible ? "block" : "none"}
                 onClick={() => {
                   setLoading(true);
-                  navigate("/quests");
+                  navigate("/dashboard");
                 }}
               >
                 Gets Started

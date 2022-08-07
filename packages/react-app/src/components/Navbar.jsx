@@ -51,6 +51,7 @@ function Navbar() {
                 className={"h-shadow-black"}
                 fontFamily={"Philosopher !important"}
                 fontSize={"2em"}
+                color={"white"}
               >
                 🦄 decademy
               </Heading>
@@ -77,7 +78,7 @@ function Navbar() {
                   Dashboard
                 </Text>
               </NavLink>
-              <NavLink
+              {/* <NavLink
                 to="/quests"
                 _hover={{ textDecoration: "none" }}
                 style={navLinkStyles}
@@ -91,7 +92,7 @@ function Navbar() {
                 >
                   Quests
                 </Text>
-              </NavLink>
+              </NavLink> */}
               <NavLink
                 to={`/community`}
                 _hover={{ textDecoration: "none" }}

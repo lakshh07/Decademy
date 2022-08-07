@@ -9,6 +9,10 @@ import Loading from "./components/Loading";
 import NewQuest from "./pages/quests/NewQuest";
 import { Box } from "@chakra-ui/react";
 import Dashboard from "./pages/Dashboard";
+import Courses from "./pages/courses/Courses";
+import Course from "./pages/courses/Course";
+import ViewCourse from "./pages/courses/ViewCourse";
+import ViewRequest from "./pages/courses/ViewRequest";
 
 function App() {
   const [loading, setLoading] = useState(true);
@@ -23,6 +27,17 @@ function App() {
             <Route path="/quests/new" element={<NewQuest />} />
 
             <Route path="dashboard" element={<Dashboard />} />
+
+            <Route path="/dashboard/courses" element={<Courses />} />
+            <Route path="/dashboard/courses/:id" element={<Course />} />
+            <Route
+              path="/dashboard/courses/:id/version/:version"
+              element={<ViewCourse />}
+            />
+            <Route
+              path="/dashboard/courses/:id/requests/:reqId"
+              element={<ViewRequest />}
+            />
           </Routes>
         </Box>
       </LoadingContext.Provider>

@@ -109,7 +109,7 @@ function Courses() {
     <>
       <Navbar />
 
-      <Container maxW={"1200px"} pt={"1.5em"}>
+      <Container maxW={"1200px"}>
         <Box my={"4rem"}>
           <Flex alignItems={"center"} justifyContent={"space-between"}>
             <Flex alignItems={"center"}>

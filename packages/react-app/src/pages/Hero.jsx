@@ -3,11 +3,13 @@ import { Box, Button, Container, Flex, Heading } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import { useLoadingContext } from "../context/loading";
 import Navbar from "../components/Navbar";
+import { useAccount } from "wagmi";
 
 function Hero() {
   const { setLoading } = useLoadingContext();
   const [visible, setVisible] = useState(true);
   const navigate = useNavigate();
+  const { isConnected } = useAccount();
 
   function parallax(e) {
     document.querySelectorAll(".px-move").forEach(function (move) {
@@ -90,6 +92,7 @@ function Hero() {
                 color={"black"}
                 py={"0.375rem"}
                 px={"1rem"}
+                isDisabled={!isConnected}
                 colorScheme={"white"}
                 display={visible ? "block" : "none"}
                 onClick={() => {

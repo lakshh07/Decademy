@@ -6,6 +6,7 @@ import {
   Grid,
   GridItem,
   Heading,
+  IconButton,
   Image,
   Slider,
   SliderFilledTrack,
@@ -23,6 +24,7 @@ import { FiArrowUpRight } from "react-icons/fi";
 import { GrMoney } from "react-icons/gr";
 import { HiOutlineCash } from "react-icons/hi";
 import { MdGraphicEq } from "react-icons/md";
+import { RiDeleteBin5Line } from "react-icons/ri";
 import { useNavigate } from "react-router-dom";
 import truncateMiddle from "truncate-middle";
 import Navbar from "../../components/Navbar";
@@ -130,7 +132,7 @@ function Podcasts() {
     <>
       <Navbar />
 
-      <Container my={"4em"} maxW={"1200px"}>
+      <Container my={"4em"} maxW={"1200px"} pb={"6em"}>
         <Flex alignItems={"center"} justifyContent={"space-between"}>
           <Flex alignItems={"center"}>
             <Heading fontSize={"2.1rem"} color={"white"} lineHeight={"2.5rem"}>
@@ -267,21 +269,39 @@ function Podcasts() {
                           </Box>
                         </Box>
                         <Box py={"1.2rem"} px={"1.5rem"}>
-                          <Tag
-                            borderWidth={"2px"}
-                            borderColor={"rgb(10 10 10/1)"}
-                            borderRadius={"9999px"}
-                            textTransform={"uppercase"}
-                            fontWeight={600}
-                            fontSize={"0.75rem"}
-                            lineHeight={"1rem"}
-                            py={"0.25rem"}
-                            px={"0.75rem"}
-                            bg={"rgb(183 234 213)"}
-                            position={"relative"}
-                          >
-                            Podcast
-                          </Tag>
+                          <Flex alignItems={"center"}>
+                            <Tag
+                              borderWidth={"2px"}
+                              borderColor={"rgb(10 10 10/1)"}
+                              borderRadius={"9999px"}
+                              textTransform={"uppercase"}
+                              fontWeight={600}
+                              fontSize={"0.75rem"}
+                              lineHeight={"1rem"}
+                              py={"0.25rem"}
+                              px={"0.75rem"}
+                              bg={"rgb(183 234 213)"}
+                              position={"relative"}
+                            >
+                              Podcast
+                            </Tag>
+
+                            <IconButton
+                              ml={"10px"}
+                              py={"0.25rem"}
+                              px={"0.75rem"}
+                              variant={"outline"}
+                              borderColor={"rgb(10 10 10/1)"}
+                              borderRadius={"9999px"}
+                              borderWidth={"2px"}
+                              colorScheme={"red"}
+                              bg={"red.100"}
+                              fontSize={"1em"}
+                              size={"sm"}
+                              icon={<RiDeleteBin5Line color={"red"} />}
+                            />
+                          </Flex>
+
                           <PlayButton
                             active={active}
                             changeButton={changeButton}

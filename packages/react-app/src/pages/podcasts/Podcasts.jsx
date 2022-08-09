@@ -7,7 +7,11 @@ import {
   GridItem,
   Heading,
   Image,
-  Progress,
+  Slider,
+  SliderFilledTrack,
+  SliderMark,
+  SliderThumb,
+  SliderTrack,
   Spinner,
   Tag,
   Text,
@@ -18,18 +22,17 @@ import React, { useEffect, useRef, useState } from "react";
 import { FiArrowUpRight } from "react-icons/fi";
 import { GrMoney } from "react-icons/gr";
 import { HiOutlineCash } from "react-icons/hi";
+import { MdGraphicEq } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 import truncateMiddle from "truncate-middle";
 import Navbar from "../../components/Navbar";
+import PlayButton from "../../components/PlayButton";
 import { useLoadingContext } from "../../context/loading";
 import Blockies from "react-blockies";
 import gradiant from "../../assets/gradiant.png";
-import matic from "../../assets/matic.svg";
 import notFound from "../../assets/page-not-found.png";
-import ReactPlayer from "react-player";
-import animationData from "../../assets/play-pause.json";
+import animationnn from "../../assets/music.json";
 import Lottie from "react-lottie";
-import lottieWeb from "lottie-web";
 
 function Podcasts() {
   const { setLoading } = useLoadingContext();
@@ -38,49 +41,91 @@ function Podcasts() {
 
   const [length, setLength] = useState(0);
   const [audioo, setAudioo] = useState();
-  const [k, setK] = useState();
+  const [audioSeek, setAudioSeek] = useState();
+  const [active, setActive] = useState("");
+  const [hoverIndex, setHoverIndex] = useState(0);
+  const [duration, setDuration] = useState();
   const loading = false;
-  const fetchData = [{}];
+  const fetchData = [
+    {
+      url: "https://www.learningcontainer.com/wp-content/uploads/2020/02/Kalimba.mp3",
+    },
+    {
+      url: "https://www.learningcontainer.com/wp-content/uploads/2020/02/Kalimba-online-audio-converter.com_-1.wav",
+    },
+    {
+      url: "https://storage.googleapis.com/media-session/elephants-dream/the-wires.mp3",
+    },
+  ];
+
+  async function changeButton(index) {
+    if (active === "active") {
+      setActive("");
+      pause();
+      setHoverIndex(index);
+      return;
+    }
+    setHoverIndex(index);
+    setActive("active");
+    playOnSelect(fetchData, index);
+  }
+
+  function changeValue(e) {
+    audioo.currentTime = e;
+  }
+
+  const pause = () => {
+    document.querySelector("#audio-element").pause();
+  };
+
+  const playMusic = () => {
+    document.querySelector("#audio-element").play();
+  };
+
+  const playOnSelect = (song, index) => {
+    try {
+      document.querySelector("#audio-element").src = song[index].url;
+      document.querySelector("#audio-element").play();
+    } catch (e) {
+      console.log(e);
+    }
+  };
 
   const defaultOptions = {
-    loop: false,
-    autoplay: false,
-    animationData: animationData,
+    loop: true,
+    autoplay: true,
+    animationData: animationnn,
     rendererSettings: {
       preserveAspectRatio: "xMidYMid slice",
     },
   };
-  const animation = lottieWeb.loadAnimation({
-    container: k,
-    path: "https://assets5.lottiefiles.com/packages/lf20_qHRlf9/play_pouse.json",
-    renderer: "svg",
-    loop: false,
-    autoplay: false,
-    name: "Demo Animation",
-  });
-  animation.goToAndStop(14, true);
-  const lottieRef = useRef();
+
   async function fund() {}
-  //   animation.playSegments([14, 27], true);
-  //   animation.playSegments([0, 14], true);
+
+  const calculateTime = (secs) => {
+    const minutes = Math.floor(secs / 60);
+    const seconds = Math.floor(secs % 60);
+    const returnedSeconds = seconds < 10 ? `0${seconds}` : `${seconds}`;
+    return `${minutes}:${returnedSeconds}`;
+  };
+
   useEffect(() => {
     setTimeout(() => {
       setLoading(false);
     }, 1500);
-
-    const audio = document.querySelector("audio");
-    const player = document.querySelector("lottie-player");
-    console.log(audio?.currentTime);
-    // player.getLottie().playSegments([0, 200], true);
-    // audio.addEventListener("timeupdate", () => {
-    //   setAudioo(Math.floor(audio.currentTime));
-    // });
-    // const playIconContainer = document.getElementById("adni");
-    // setK(playIconContainer);
   }, []);
-  //   lottieRef?.current?.play();
-  console.log(audioo, "a");
-  //   lottieRef?.current?.playSegments([0, 5], true);
+
+  useEffect(() => {
+    const audio = document.querySelector("#audio-element");
+    setAudioo(audio);
+    audio.addEventListener("timeupdate", () => {
+      setAudioSeek(Math.floor(audio.currentTime));
+    });
+    audio.addEventListener("loadedmetadata", () => {
+      setDuration(audio.duration);
+    });
+  }, [hoverIndex]);
+
   return (
     <>
       <Navbar />
@@ -126,6 +171,8 @@ function Podcasts() {
         </Flex>
 
         <Box>
+          <audio id="audio-element" hidden playsInline />
+
           {loading ? (
             <>
               <Flex my="12rem" justifyContent="center" alignItems="center">
@@ -148,8 +195,9 @@ function Podcasts() {
                         borderRadius={"0.625rem"}
                         overflow={"hidden"}
                         cursor={"pointer"}
+                        p={"0em !important"}
                         transform={"scale(1)"}
-                        className={"glass-ui"}
+                        className={"glass-ui-2"}
                         backgroundColor={"white"}
                         transition={"transform 0.2s cubic-bezier(0.4, 0, 1, 1)"}
                         _hover={{
@@ -157,39 +205,248 @@ function Podcasts() {
                           transition:
                             "transform 0.2s cubic-bezier(0.4, 0, 1, 1)",
                         }}
-                      ></Box>
+                      >
+                        <Box
+                          h={"250px"}
+                          overflow={"hidden"}
+                          boxShadow="rgba(17, 12, 46, 0.15) 0px 48px 100px 0px"
+                          position={"relative"}
+                        >
+                          <Image
+                            alt={list.questName}
+                            objectFit={"cover"}
+                            src={gradiant}
+                            h={"100%"}
+                            w={"100%"}
+                            className={"animation"}
+                          />
+
+                          <Box className={hoverIndex === index && active}>
+                            <Box pt={"1.8em"} className="show play-hover">
+                              <Lottie
+                                options={defaultOptions}
+                                height={130}
+                                width={200}
+                              />
+
+                              <Box w={"250px"} mx={"auto"}>
+                                <Slider
+                                  aria-label="slider-ex-4"
+                                  value={audioSeek}
+                                  min={0}
+                                  max={Math.floor(duration)}
+                                  onChange={changeValue}
+                                >
+                                  <SliderMark
+                                    value={0}
+                                    mt="2"
+                                    ml="-2.5"
+                                    fontSize="sm"
+                                  >
+                                    {calculateTime(audioSeek)}
+                                  </SliderMark>
+                                  <SliderMark
+                                    value={Math.floor(duration)}
+                                    mt="2"
+                                    ml="-2.5"
+                                    fontSize="sm"
+                                  >
+                                    {calculateTime(
+                                      Math.floor(audioo?.duration)
+                                    )}
+                                  </SliderMark>
+                                  <SliderTrack bg="whiteAlpha.100">
+                                    <SliderFilledTrack bg="white" />
+                                  </SliderTrack>
+                                  <SliderThumb boxSize={4}>
+                                    <Box color="black" as={MdGraphicEq} />
+                                  </SliderThumb>
+                                </Slider>
+                              </Box>
+                            </Box>
+                          </Box>
+                        </Box>
+                        <Box py={"1.2rem"} px={"1.5rem"}>
+                          <Tag
+                            borderWidth={"2px"}
+                            borderColor={"rgb(10 10 10/1)"}
+                            borderRadius={"9999px"}
+                            textTransform={"uppercase"}
+                            fontWeight={600}
+                            fontSize={"0.75rem"}
+                            lineHeight={"1rem"}
+                            py={"0.25rem"}
+                            px={"0.75rem"}
+                            bg={"rgb(183 234 213)"}
+                            position={"relative"}
+                          >
+                            Podcast
+                          </Tag>
+                          <PlayButton
+                            active={active}
+                            changeButton={changeButton}
+                            index={index}
+                            hoverIndex={hoverIndex}
+                          />
+                          <Heading
+                            mt={"1rem"}
+                            fontSize={"1.5rem"}
+                            lineHeight={"2rem"}
+                            color={"#1a202c"}
+                          >
+                            taking into web3
+                            {/* {list.questName} */}
+                          </Heading>
+                          <Text
+                            fontSize={"0.875rem"}
+                            lineHeight={"1.25rem"}
+                            color={"#888888"}
+                            mt={"0.5rem"}
+                            mb={"1em"}
+                          >
+                            dddd
+                            {/* {list.questDescription} */}
+                          </Text>
+
+                          <Flex
+                            alignItems={"center"}
+                            justifyContent={"space-between"}
+                          >
+                            <Flex
+                              borderWidth={"2px"}
+                              borderColor={"rgb(10 10 10/1)"}
+                              alignItems={"center"}
+                              borderRadius={"0.3125rem"}
+                              bg={"rgb(198 201 246)"}
+                              py={"0.25rem"}
+                              px={"0.75rem"}
+                              w={"max-content"}
+                              //   mt={"1.2rem"}
+                            >
+                              <Box
+                                borderRadius={"50%"}
+                                borderWidth={"1.5px"}
+                                borderColor={"rgb(10 10 10/1)"}
+                                overflow={"hidden"}
+                              >
+                                <Blockies
+                                  seed={list.uploader}
+                                  color="#dfe"
+                                  bgcolor="#aaa"
+                                  default="-1"
+                                  size={10}
+                                  scale={2}
+                                />
+                              </Box>
+                              <Text
+                                ml={"10px"}
+                                fontSize={"0.75rem"}
+                                lineHeight={"1rem"}
+                                fontWeight={600}
+                                color={"black"}
+                              >
+                                {truncateMiddle(
+                                  "0x7b1C1702A09521b4160f79f853b7F54ba6b35a59" ||
+                                    "",
+                                  5,
+                                  4,
+                                  "..."
+                                )}
+                                {/* {truncateMiddle(list.uploader || "", 5, 4, "...")} */}
+                              </Text>
+                            </Flex>
+
+                            <Flex
+                              bg={"#EDF2F6"}
+                              fontSize={"14px"}
+                              lineHeight={"17px"}
+                              w={"max-content"}
+                              borderRadius={"0.375rem"}
+                              px={"0.5rem"}
+                              py={"0.25rem"}
+                              alignItems={"center"}
+                              //   mb={"1em"}
+                            >
+                              <Flex
+                                alignItems={"center"}
+                                px={"0.5rem"}
+                                py={"0.25rem"}
+                                bg={"#E4E7EB"}
+                                borderRadius={"0.375rem"}
+                                mr={"10px"}
+                                color={"black"}
+                              >
+                                <GrMoney fontSize={"12px"} />
+                                <Text ml={"8px"} fontWeight={500}>
+                                  Price
+                                </Text>
+                              </Flex>
+                              <Text
+                                fontWeight={600}
+                                textTransform={"capitalize"}
+                                color={"black"}
+                              >
+                                1{" "}
+                                {/* {ethers.utils.formatEther(
+                                list.questPrice.toString()
+                              )}{" "} */}
+                                Matic
+                              </Text>
+                            </Flex>
+                          </Flex>
+                        </Box>
+                        <Box>
+                          <Flex
+                            justifyContent={"space-between"}
+                            alignItems={"center"}
+                            borderTopWidth={"2px"}
+                            py={"1rem"}
+                            px={"2rem"}
+                            bg={"rgba(250, 229, 195,1)"}
+                            //   onClick={() =>
+                            //     list.questAmountRaised.toString() ===
+                            //     list.questGoal.toString()
+                            //       ? toast({
+                            //           title: "Funded",
+                            //           status: "info",
+                            //           duration: 4000,
+                            //           isClosable: true,
+                            //           position: "top",
+                            //           variant: "subtle",
+                            //         })
+                            //       : fund(
+                            //           list.questPrice.toString(),
+                            //           list.questId,
+                            //           list.id
+                            //         )
+                            //   }
+                            //   cursor={
+                            //     list.questAmountRaised.toString() ===
+                            //     list.questGoal.toString()
+                            //       ? "not-allowed"
+                            //       : "pointer"
+                            //   }
+                          >
+                            <Flex color={"black"} alignItems={"center"}>
+                              {" "}
+                              <HiOutlineCash />
+                              <Text ml={"5px"} fontWeight={600}>
+                                {/* {list.questAmountRaised.toString() ===
+                                  list.questGoal.toString()
+                                    ? "Funded"
+                                    : "Fund"} */}
+                                Mint
+                              </Text>
+                            </Flex>
+
+                            <FiArrowUpRight color={"black"} fontSize={"20px"} />
+                          </Flex>
+                        </Box>
+                      </Box>
                     </GridItem>
                   );
                 })}
               </Grid>
-              <ReactPlayer
-                url={
-                  "https://hanzluo.s3-us-west-1.amazonaws.com/music/wuyuwuqing.mp3"
-                }
-                playing={false}
-                controls={true}
-                onSeek={(e) => console.log("onSeek", e)}
-                onProgress={(e) => console.log("onProgress", e)}
-                onDuration={(e) => console.log("onDuration", e)}
-              ></ReactPlayer>
-              <Lottie
-                options={defaultOptions}
-                ref={lottieRef}
-                height={400}
-                width={400}
-                // className={"lottie-player"}
-                // goToAndStop={14}
-                // playSegments={(0, 14)}
-                // isStopped={true}
-                // isPaused={true}
-              />
-              <div id="ani"></div>(
-              <Button
-                onClick={() => lottieRef.current.playSegments([10, 20], false)}
-              >
-                play
-              </Button>
-              )<Button onClick={() => lottieRef.current.play()}>pause</Button>
             </>
           ) : (
             <>

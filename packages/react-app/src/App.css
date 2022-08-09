@@ -82,6 +82,9 @@ input {
   background-repeat: no-repeat;
   animation: 8s ease-in-out 0s infinite normal none running benDQH;
 }
+.animation {
+  animation: 8s ease-in-out 0s infinite normal none running benDQH;
+}
 
 @keyframes benDQH {
   0% {
@@ -159,6 +162,20 @@ input {
   right: -10px;
   -webkit-transform: scaleX(-1);
   transform: scaleX(-1);
+}
+
+.active .show {
+  transform: translateY(0%);
+}
+
+.play-hover {
+  transform: translateY(100%);
+  transition: transform cubic-bezier(0.77, 0, 0.175, 1) 0.8s;
+  top: 0;
+  position: absolute;
+  background-color: rgba(0, 0, 0, 0.5);
+  height: 100%;
+  width: 100%;
 }
 
 /* connect button */

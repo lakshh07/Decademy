@@ -33,8 +33,8 @@ function App() {
             <Route path="/dashboard/quests" element={<Quests />} />
             <Route path="/dashboard/quests/new" element={<NewQuest />} />
 
-            {/* <Route path="/dashboard/podcasts" element={<Podcasts />} />
-            <Route path="/dashboard/podcasts/new" element={<NewPodcasts />} /> */}
+            <Route path="/dashboard/podcasts" element={<Podcasts />} />
+            <Route path="/dashboard/podcasts/new" element={<NewPodcasts />} />
 
             <Route path="/dashboard/courses" element={<Courses />} />
             <Route path="/dashboard/courses/:id" element={<Course />} />

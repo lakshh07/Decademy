@@ -71,6 +71,30 @@
       },
       {
         "indexed": false,
+        "internalType": "string",
+        "name": "name",
+        "type": "string"
+      },
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "description",
+        "type": "string"
+      },
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "image",
+        "type": "string"
+      },
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "music",
+        "type": "string"
+      },
+      {
+        "indexed": false,
         "internalType": "uint256",
         "name": "price",
         "type": "uint256"
@@ -316,6 +340,26 @@
         "internalType": "uint256",
         "name": "_price",
         "type": "uint256"
+      },
+      {
+        "internalType": "string",
+        "name": "_name",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "_description",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "_image",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "_music",
+        "type": "string"
       }
     ],
     "name": "createPodcast",
@@ -356,6 +400,26 @@
             "internalType": "address payable",
             "name": "uploader",
             "type": "address"
+          },
+          {
+            "internalType": "string",
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "description",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "image",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "music",
+            "type": "string"
           },
           {
             "internalType": "uint256",

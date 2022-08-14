@@ -8,6 +8,7 @@ import {
   Heading,
   IconButton,
   Image,
+  Link,
   Slider,
   SliderFilledTrack,
   SliderMark,
@@ -36,29 +37,60 @@ import notFound from "../../assets/page-not-found.png";
 import animationnn from "../../assets/music.json";
 import Lottie from "react-lottie";
 
+import {
+  useAccount,
+  useContractReads,
+  useProvider,
+  useSigner,
+  useWaitForTransaction,
+} from "wagmi";
+import { podcastContractAddress } from "../../utils/contractAddress";
+import podcastContractAbi from "../../contracts/ABI/LearnifyPodcast.json";
+
 function Podcasts() {
   const { setLoading } = useLoadingContext();
   const navigate = useNavigate();
   const toast = useToast();
-
+  const { address } = useAccount();
+  const { data: signer } = useSigner();
+  const provider = useProvider();
   const [length, setLength] = useState(0);
   const [audioo, setAudioo] = useState();
   const [audioSeek, setAudioSeek] = useState();
   const [active, setActive] = useState("");
   const [hoverIndex, setHoverIndex] = useState(0);
   const [duration, setDuration] = useState();
-  const loading = false;
-  const fetchData = [
-    {
-      url: "https://www.learningcontainer.com/wp-content/uploads/2020/02/Kalimba.mp3",
-    },
-    {
-      url: "https://www.learningcontainer.com/wp-content/uploads/2020/02/Kalimba-online-audio-converter.com_-1.wav",
-    },
-    {
-      url: "https://storage.googleapis.com/media-session/elephants-dream/the-wires.mp3",
-    },
-  ];
+  const [postHash, setPostHash] = useState();
+  const [checker, setChecker] = useState();
+
+  const {
+    data: fetchData,
+    isFetching,
+    isLoading: loading,
+  } = useContractReads({
+    contracts: [
+      {
+        addressOrName: podcastContractAddress,
+        contractInterface: podcastContractAbi,
+        functionName: "fetchPodcast",
+        watch: true,
+      },
+      {
+        addressOrName: podcastContractAddress,
+        contractInterface: podcastContractAbi,
+        functionName: "owner",
+      },
+    ],
+  });
+
+  useEffect(() => {
+    setLength(
+      fetchData[0]?.filter((list) => {
+        return list.id;
+      }).length
+    );
+    // console.log(fetchData);
+  }, [isFetching]);
 
   async function changeButton(index) {
     if (active === "active") {
@@ -86,12 +118,36 @@ function Podcasts() {
 
   const playOnSelect = (song, index) => {
     try {
-      document.querySelector("#audio-element").src = song[index].url;
+      document.querySelector("#audio-element").src = `${song[0][index].music}`;
       document.querySelector("#audio-element").play();
     } catch (e) {
       console.log(e);
     }
   };
+
+  const contract = new ethers.Contract(
+    podcastContractAddress,
+    podcastContractAbi,
+    provider
+  );
+
+  useEffect(() => {
+    checkNft();
+
+    if (audioSeek >= 40 && checker == 0) {
+      setActive("");
+      pause();
+      toast({
+        title: "Time up!!",
+        description: "Mint this Podcast to listen more",
+        status: "info",
+        duration: 5000,
+        isClosable: true,
+        position: "bottom-right",
+        variant: "subtle",
+      });
+    }
+  }, [audioSeek]);
 
   const defaultOptions = {
     loop: true,
@@ -102,7 +158,67 @@ function Podcasts() {
     },
   };
 
-  async function fund() {}
+  async function checkNft() {
+    const result = await contract.balanceOf(address, hoverIndex + 1);
+    setChecker(result.toString());
+  }
+
+  async function burnFrom(from, podcastCounter) {
+    const contract = new ethers.Contract(
+      podcastContractAddress,
+      podcastContractAbi,
+      signer
+    );
+    console.log(podcastCounter);
+    const result = await contract.burn(from, podcastCounter, 1);
+    setPostHash(result.hash);
+  }
+
+  async function mintTo(id, podcastCounter, price) {
+    const contractt = new ethers.Contract(
+      podcastContractAddress,
+      podcastContractAbi,
+      signer
+    );
+
+    let overrides = {
+      value: price,
+    };
+
+    const result = await contractt.mintPodcast(
+      id,
+      Number(podcastCounter),
+      overrides
+    );
+    setPostHash(result.hash);
+  }
+
+  const { isLoading, isSuccess } = useWaitForTransaction({
+    hash: postHash,
+  });
+
+  useEffect(() => {
+    isLoading &&
+      toast({
+        title: "Transaction Sent",
+        description: postHash,
+        status: "info",
+        duration: 4000,
+        isClosable: true,
+        variant: "subtle",
+        position: "bottom-right",
+      });
+
+    isSuccess &&
+      toast({
+        title: "Transaction Successfull",
+        status: "success",
+        duration: 3000,
+        isClosable: true,
+        position: "bottom-right",
+        variant: "subtle",
+      });
+  }, [isSuccess, isLoading, toast]);
 
   const calculateTime = (secs) => {
     const minutes = Math.floor(secs / 60);
@@ -181,291 +297,306 @@ function Podcasts() {
                 <Spinner color="white" size="xl" />
               </Flex>
             </>
-          ) : fetchData?.length ? (
+          ) : fetchData[0]?.length ? (
             <>
               <Grid
                 mt={"1.5rem"}
                 templateColumns={"repeat(3, minmax(0px, 1fr))"}
                 gap={"2rem"}
               >
-                {fetchData?.map((list, index) => {
-                  return (
-                    <GridItem key={index}>
-                      <Box
-                        borderWidth={"2px"}
-                        borderColor={"whitesmoke"}
-                        borderRadius={"0.625rem"}
-                        overflow={"hidden"}
-                        cursor={"pointer"}
-                        p={"0em !important"}
-                        transform={"scale(1)"}
-                        className={"glass-ui-2"}
-                        backgroundColor={"white"}
-                        transition={"transform 0.2s cubic-bezier(0.4, 0, 1, 1)"}
-                        _hover={{
-                          transform: "scale(1.02)",
-                          transition:
-                            "transform 0.2s cubic-bezier(0.4, 0, 1, 1)",
-                        }}
-                      >
+                {fetchData[0]
+                  ?.filter((list) => {
+                    return list.id;
+                  })
+                  .map((list, index) => {
+                    return (
+                      <GridItem key={index}>
                         <Box
-                          h={"250px"}
+                          borderWidth={"2px"}
+                          borderColor={"whitesmoke"}
+                          borderRadius={"0.625rem"}
                           overflow={"hidden"}
-                          boxShadow="rgba(17, 12, 46, 0.15) 0px 48px 100px 0px"
-                          position={"relative"}
+                          cursor={"pointer"}
+                          p={"0em !important"}
+                          transform={"scale(1)"}
+                          className={"glass-ui-2"}
+                          backgroundColor={"white"}
+                          transition={
+                            "transform 0.2s cubic-bezier(0.4, 0, 1, 1)"
+                          }
+                          _hover={{
+                            transform: "scale(1.02)",
+                            transition:
+                              "transform 0.2s cubic-bezier(0.4, 0, 1, 1)",
+                          }}
                         >
-                          <Image
-                            alt={list.questName}
-                            objectFit={"cover"}
-                            src={gradiant}
-                            h={"100%"}
-                            w={"100%"}
-                            className={"animation"}
-                          />
+                          <Box
+                            h={"250px"}
+                            overflow={"hidden"}
+                            boxShadow="rgba(17, 12, 46, 0.15) 0px 48px 100px 0px"
+                            position={"relative"}
+                          >
+                            <Image
+                              alt={list.name}
+                              objectFit={"cover"}
+                              src={list.image ? list.image : gradiant}
+                              h={"100%"}
+                              w={"100%"}
+                              className={"animation"}
+                            />
 
-                          <Box className={hoverIndex === index && active}>
-                            <Box pt={"1.8em"} className="show play-hover">
-                              <Lottie
-                                options={defaultOptions}
-                                height={130}
-                                width={200}
-                              />
+                            <Box className={hoverIndex === index && active}>
+                              <Box pt={"1.8em"} className="show play-hover">
+                                <Lottie
+                                  options={defaultOptions}
+                                  height={130}
+                                  width={200}
+                                />
 
-                              <Box w={"250px"} mx={"auto"}>
-                                <Slider
-                                  aria-label="slider-ex-4"
-                                  value={audioSeek}
-                                  min={0}
-                                  max={Math.floor(duration)}
-                                  onChange={changeValue}
-                                >
-                                  <SliderMark
-                                    value={0}
-                                    mt="2"
-                                    ml="-2.5"
-                                    fontSize="sm"
+                                <Box w={"250px"} mx={"auto"}>
+                                  <Slider
+                                    aria-label="slider-ex-4"
+                                    value={audioSeek}
+                                    min={0}
+                                    max={Math.floor(duration)}
+                                    onChange={changeValue}
                                   >
-                                    {calculateTime(audioSeek)}
-                                  </SliderMark>
-                                  <SliderMark
-                                    value={Math.floor(duration)}
-                                    mt="2"
-                                    ml="-2.5"
-                                    fontSize="sm"
-                                  >
-                                    {calculateTime(
-                                      Math.floor(audioo?.duration)
-                                    )}
-                                  </SliderMark>
-                                  <SliderTrack bg="whiteAlpha.100">
-                                    <SliderFilledTrack bg="white" />
-                                  </SliderTrack>
-                                  <SliderThumb boxSize={4}>
-                                    <Box color="black" as={MdGraphicEq} />
-                                  </SliderThumb>
-                                </Slider>
+                                    <SliderMark
+                                      value={0}
+                                      mt="2"
+                                      ml="-2.5"
+                                      fontSize="sm"
+                                    >
+                                      {calculateTime(audioSeek)}
+                                    </SliderMark>
+                                    <SliderMark
+                                      value={Math.floor(duration)}
+                                      mt="2"
+                                      ml="-2.5"
+                                      fontSize="sm"
+                                    >
+                                      {calculateTime(
+                                        Math.floor(audioo?.duration)
+                                      )}
+                                    </SliderMark>
+                                    <SliderTrack bg="whiteAlpha.100">
+                                      <SliderFilledTrack bg="white" />
+                                    </SliderTrack>
+                                    <SliderThumb boxSize={4}>
+                                      <Box color="black" as={MdGraphicEq} />
+                                    </SliderThumb>
+                                  </Slider>
+                                </Box>
                               </Box>
                             </Box>
                           </Box>
-                        </Box>
-                        <Box py={"1.2rem"} px={"1.5rem"}>
-                          <Flex alignItems={"center"}>
-                            <Tag
-                              borderWidth={"2px"}
-                              borderColor={"rgb(10 10 10/1)"}
-                              borderRadius={"9999px"}
-                              textTransform={"uppercase"}
-                              fontWeight={600}
-                              fontSize={"0.75rem"}
-                              lineHeight={"1rem"}
-                              py={"0.25rem"}
-                              px={"0.75rem"}
-                              bg={"rgb(183 234 213)"}
-                              position={"relative"}
-                            >
-                              Podcast
-                            </Tag>
-
-                            <IconButton
-                              ml={"10px"}
-                              py={"0.25rem"}
-                              px={"0.75rem"}
-                              variant={"outline"}
-                              borderColor={"rgb(10 10 10/1)"}
-                              borderRadius={"9999px"}
-                              borderWidth={"2px"}
-                              colorScheme={"red"}
-                              bg={"red.100"}
-                              fontSize={"1em"}
-                              size={"sm"}
-                              icon={<RiDeleteBin5Line color={"red"} />}
-                            />
-                          </Flex>
-
-                          <PlayButton
-                            active={active}
-                            changeButton={changeButton}
-                            index={index}
-                            hoverIndex={hoverIndex}
-                          />
-                          <Heading
-                            mt={"1rem"}
-                            fontSize={"1.5rem"}
-                            lineHeight={"2rem"}
-                            color={"#1a202c"}
-                          >
-                            taking into web3
-                            {/* {list.questName} */}
-                          </Heading>
-                          <Text
-                            fontSize={"0.875rem"}
-                            lineHeight={"1.25rem"}
-                            color={"#888888"}
-                            mt={"0.5rem"}
-                            mb={"1em"}
-                          >
-                            dddd
-                            {/* {list.questDescription} */}
-                          </Text>
-
-                          <Flex
-                            alignItems={"center"}
-                            justifyContent={"space-between"}
-                          >
-                            <Flex
-                              borderWidth={"2px"}
-                              borderColor={"rgb(10 10 10/1)"}
-                              alignItems={"center"}
-                              borderRadius={"0.3125rem"}
-                              bg={"rgb(198 201 246)"}
-                              py={"0.25rem"}
-                              px={"0.75rem"}
-                              w={"max-content"}
-                              //   mt={"1.2rem"}
-                            >
-                              <Box
-                                borderRadius={"50%"}
-                                borderWidth={"1.5px"}
+                          <Box py={"1.2rem"} px={"1.5rem"}>
+                            <Flex alignItems={"center"}>
+                              <Tag
+                                borderWidth={"2px"}
                                 borderColor={"rgb(10 10 10/1)"}
-                                overflow={"hidden"}
-                              >
-                                <Blockies
-                                  seed={list.uploader}
-                                  color="#dfe"
-                                  bgcolor="#aaa"
-                                  default="-1"
-                                  size={10}
-                                  scale={2}
-                                />
-                              </Box>
-                              <Text
-                                ml={"10px"}
+                                borderRadius={"9999px"}
+                                textTransform={"uppercase"}
+                                fontWeight={600}
                                 fontSize={"0.75rem"}
                                 lineHeight={"1rem"}
-                                fontWeight={600}
-                                color={"black"}
+                                py={"0.25rem"}
+                                px={"0.75rem"}
+                                bg={"rgb(183 234 213)"}
+                                position={"relative"}
                               >
-                                {truncateMiddle(
-                                  "0x7b1C1702A09521b4160f79f853b7F54ba6b35a59" ||
-                                    "",
-                                  5,
-                                  4,
-                                  "..."
-                                )}
-                                {/* {truncateMiddle(list.uploader || "", 5, 4, "...")} */}
-                              </Text>
+                                Podcast
+                              </Tag>
+
+                              {list.uploader === address ||
+                              fetchData[1] === address ? (
+                                <IconButton
+                                  ml={"10px"}
+                                  py={"0.25rem"}
+                                  px={"0.75rem"}
+                                  variant={"outline"}
+                                  borderColor={"rgb(10 10 10/1)"}
+                                  borderRadius={"9999px"}
+                                  borderWidth={"2px"}
+                                  colorScheme={"red"}
+                                  bg={"red.100"}
+                                  fontSize={"1em"}
+                                  size={"sm"}
+                                  icon={<RiDeleteBin5Line color={"red"} />}
+                                  onClick={() =>
+                                    burnFrom(
+                                      list.uploader,
+                                      list.podcastCount.toString()
+                                    )
+                                  }
+                                />
+                              ) : (
+                                <></>
+                              )}
                             </Flex>
+
+                            <PlayButton
+                              active={active}
+                              changeButton={changeButton}
+                              index={index}
+                              hoverIndex={hoverIndex}
+                            />
+                            <Link
+                              href={`https://testnets.opensea.io/assets/mumbai/0xea0c6a6b88826706da5dfaa0da11c4a46dce0519/${list.podcastCount.toString()}`}
+                              isExternal
+                            >
+                              <Heading
+                                mt={"1rem"}
+                                fontSize={"1.5rem"}
+                                lineHeight={"2rem"}
+                                color={"#1a202c"}
+                              >
+                                {list.name}
+                              </Heading>
+                            </Link>
+                            <Text
+                              fontSize={"0.875rem"}
+                              lineHeight={"1.25rem"}
+                              color={"#888888"}
+                              mt={"0.5rem"}
+                              mb={"1em"}
+                            >
+                              {list.description}
+                            </Text>
 
                             <Flex
-                              bg={"#EDF2F6"}
-                              fontSize={"14px"}
-                              lineHeight={"17px"}
-                              w={"max-content"}
-                              borderRadius={"0.375rem"}
-                              px={"0.5rem"}
-                              py={"0.25rem"}
                               alignItems={"center"}
-                              //   mb={"1em"}
+                              justifyContent={"space-between"}
                             >
                               <Flex
+                                borderWidth={"2px"}
+                                borderColor={"rgb(10 10 10/1)"}
                                 alignItems={"center"}
-                                px={"0.5rem"}
+                                borderRadius={"0.3125rem"}
+                                bg={"rgb(198 201 246)"}
                                 py={"0.25rem"}
-                                bg={"#E4E7EB"}
-                                borderRadius={"0.375rem"}
-                                mr={"10px"}
-                                color={"black"}
+                                px={"0.75rem"}
+                                w={"max-content"}
+                                //   mt={"1.2rem"}
                               >
-                                <GrMoney fontSize={"12px"} />
-                                <Text ml={"8px"} fontWeight={500}>
-                                  Price
+                                <Box
+                                  borderRadius={"50%"}
+                                  borderWidth={"1.5px"}
+                                  borderColor={"rgb(10 10 10/1)"}
+                                  overflow={"hidden"}
+                                >
+                                  <Blockies
+                                    seed={list.uploader}
+                                    color="#dfe"
+                                    bgcolor="#aaa"
+                                    default="-1"
+                                    size={10}
+                                    scale={2}
+                                  />
+                                </Box>
+                                <Text
+                                  ml={"10px"}
+                                  fontSize={"0.75rem"}
+                                  lineHeight={"1rem"}
+                                  fontWeight={600}
+                                  color={"black"}
+                                >
+                                  {truncateMiddle(
+                                    list.uploader || "",
+                                    5,
+                                    4,
+                                    "..."
+                                  )}
                                 </Text>
                               </Flex>
-                              <Text
-                                fontWeight={600}
-                                textTransform={"capitalize"}
-                                color={"black"}
-                              >
-                                1{" "}
-                                {/* {ethers.utils.formatEther(
-                                list.questPrice.toString()
-                              )}{" "} */}
-                                Matic
-                              </Text>
-                            </Flex>
-                          </Flex>
-                        </Box>
-                        <Box>
-                          <Flex
-                            justifyContent={"space-between"}
-                            alignItems={"center"}
-                            borderTopWidth={"2px"}
-                            py={"1rem"}
-                            px={"2rem"}
-                            bg={"rgba(250, 229, 195,1)"}
-                            //   onClick={() =>
-                            //     list.questAmountRaised.toString() ===
-                            //     list.questGoal.toString()
-                            //       ? toast({
-                            //           title: "Funded",
-                            //           status: "info",
-                            //           duration: 4000,
-                            //           isClosable: true,
-                            //           position: "top",
-                            //           variant: "subtle",
-                            //         })
-                            //       : fund(
-                            //           list.questPrice.toString(),
-                            //           list.questId,
-                            //           list.id
-                            //         )
-                            //   }
-                            //   cursor={
-                            //     list.questAmountRaised.toString() ===
-                            //     list.questGoal.toString()
-                            //       ? "not-allowed"
-                            //       : "pointer"
-                            //   }
-                          >
-                            <Flex color={"black"} alignItems={"center"}>
-                              {" "}
-                              <HiOutlineCash />
-                              <Text ml={"5px"} fontWeight={600}>
-                                {/* {list.questAmountRaised.toString() ===
-                                  list.questGoal.toString()
-                                    ? "Funded"
-                                    : "Fund"} */}
-                                Mint
-                              </Text>
-                            </Flex>
 
-                            <FiArrowUpRight color={"black"} fontSize={"20px"} />
-                          </Flex>
+                              <Flex
+                                bg={"#EDF2F6"}
+                                fontSize={"14px"}
+                                lineHeight={"17px"}
+                                w={"max-content"}
+                                borderRadius={"0.375rem"}
+                                px={"0.5rem"}
+                                py={"0.25rem"}
+                                alignItems={"center"}
+                                //   mb={"1em"}
+                              >
+                                <Flex
+                                  alignItems={"center"}
+                                  px={"0.5rem"}
+                                  py={"0.25rem"}
+                                  bg={"#E4E7EB"}
+                                  borderRadius={"0.375rem"}
+                                  mr={"10px"}
+                                  color={"black"}
+                                >
+                                  <GrMoney fontSize={"12px"} />
+                                  <Text ml={"8px"} fontWeight={500}>
+                                    Price
+                                  </Text>
+                                </Flex>
+                                <Text
+                                  fontWeight={600}
+                                  textTransform={"capitalize"}
+                                  color={"black"}
+                                >
+                                  {ethers.utils.formatEther(
+                                    list.price.toString()
+                                  )}{" "}
+                                  Matic
+                                </Text>
+                              </Flex>
+                            </Flex>
+                          </Box>
+                          <Box>
+                            <Flex
+                              justifyContent={"space-between"}
+                              alignItems={"center"}
+                              borderTopWidth={"2px"}
+                              py={"1rem"}
+                              px={"2rem"}
+                              bg={"rgba(250, 229, 195,1)"}
+                              onClick={async () => {
+                                const result = await contract.balanceOf(
+                                  address,
+                                  list.podcastCount.toString()
+                                );
+                                if (result.toString() >= 1) {
+                                  toast({
+                                    title: "Already Minted",
+                                    status: "info",
+                                    duration: 4000,
+                                    isClosable: true,
+                                    position: "bottom-right",
+                                    variant: "subtle",
+                                  });
+                                } else {
+                                  mintTo(
+                                    list.id,
+                                    list.podcastCount.toString(),
+                                    list.price.toString()
+                                  );
+                                }
+                              }}
+                            >
+                              <Flex color={"black"} alignItems={"center"}>
+                                {" "}
+                                <HiOutlineCash />
+                                <Text ml={"5px"} fontWeight={600}>
+                                  Mint
+                                </Text>
+                              </Flex>
+
+                              <FiArrowUpRight
+                                color={"black"}
+                                fontSize={"20px"}
+                              />
+                            </Flex>
+                          </Box>
                         </Box>
-                      </Box>
-                    </GridItem>
-                  );
-                })}
+                      </GridItem>
+                    );
+                  })}
               </Grid>
             </>
           ) : (

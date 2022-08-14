@@ -27,29 +27,30 @@ import matic from "../../assets/matic.svg";
 import gradiant from "../../assets/gradiant.png";
 
 import { useWaitForTransaction, useAccount, useSigner } from "wagmi";
-import { questsAddress } from "../../utils/contractAddress";
-import questContractAbi from "../../contracts/ABI/Quests.json";
+import { podcastContractAddress } from "../../utils/contractAddress";
+import podcastContractAbi from "../../contracts/ABI/LearnifyPodcast.json";
 import { v4 as uuidv4 } from "uuid";
+import { uploadToIpfss, client } from "../../utils/ipfs";
 import Navbar from "../../components/Navbar";
 import { ethers } from "ethers";
 
 function NewQuest() {
   const { setLoading } = useLoadingContext();
-  const { address } = useAccount();
   const toast = useToast();
   const { data: signer } = useSigner();
   const navigate = useNavigate();
   const [postHash, setPostHash] = useState("");
-  const [questData, setQuestData] = useState({
-    title: "",
+  const [podcastData, setPodcastData] = useState({
+    name: "",
     description: "",
+    image: "0",
     price: "0",
-    goal: "0",
-    fee: "0",
+    music: "0",
   });
-
+  const fileRef = useRef(null);
   const [avatar, setAvatar] = useState(null);
-
+  const [music, setMusic] = useState(null);
+  const [checker, setChecker] = useState(false);
   useEffect(() => {
     setTimeout(() => {
       setLoading(false);
@@ -57,27 +58,56 @@ function NewQuest() {
   }, []);
 
   function onChange(e) {
-    setQuestData(() => ({ ...questData, [e.target.name]: e.target.value }));
+    setPodcastData(() => ({ ...podcastData, [e.target.name]: e.target.value }));
   }
 
-  async function createQ() {
+  const createPodcast = async () => {
+    setChecker(true);
+    const musicIpfs = await uploadToIpfss(music);
+    const imageIpfs = await uploadToIpfss(avatar);
+
+    setPodcastData({
+      price: ethers.utils.parseEther(podcastData.price).toString(),
+    });
+
+    const newJson = {
+      name: podcastData.name,
+      description: podcastData.description,
+      price: ethers.utils.parseEther(podcastData.price).toString(),
+      // image: imageIpfs,
+      // music: musicIpfs,
+      attributes: [{ trait_type: "Location", value: "Metaverse" }],
+    };
+    const name = podcastData.name;
+    const description = podcastData.description;
+    const contentURI = await client.store({
+      name: name,
+      description: description,
+      price: podcastData.price,
+      image: avatar,
+      music: musicIpfs,
+      attributes: [{ trait_type: "Location", value: "Metaverse" }],
+    });
+
+    console.log(contentURI);
     const contract = new ethers.Contract(
-      questsAddress,
-      questContractAbi,
+      podcastContractAddress,
+      podcastContractAbi,
       signer
     );
 
-    const result = await contract.createQuest(
+    const result = await contract.createPodcast(
       uuidv4(),
-      questData.title,
-      questData.description,
-      (questData.price * Math.pow(10, 18)).toString(),
-      (questData.goal * Math.pow(10, 18)).toString(),
-      questData.fee
+      contentURI.url,
+      ethers.utils.parseEther(podcastData.price).toString(),
+      podcastData.name,
+      podcastData.description,
+      imageIpfs,
+      musicIpfs
     );
-    console.log(result.hash);
     setPostHash(result.hash);
-  }
+    console.log(contentURI);
+  };
 
   const { isLoading, isSuccess } = useWaitForTransaction({
     hash: postHash,
@@ -85,12 +115,12 @@ function NewQuest() {
 
   useEffect(() => {
     postHash &&
-      setQuestData({
-        title: "",
+      setPodcastData({
+        name: "",
         description: "",
         price: "0",
-        goal: "0",
-        fee: "0",
+        image: "",
+        music: "",
       });
 
     isLoading &&
@@ -104,6 +134,7 @@ function NewQuest() {
         position: "bottom-right",
       });
 
+    isSuccess && setChecker(false);
     isSuccess &&
       toast({
         title: "Transaction Successfull",
@@ -119,7 +150,7 @@ function NewQuest() {
         setLoading(true);
         navigate("/dashboard/podcasts");
       }, 4000);
-  }, [isSuccess, isLoading, setQuestData, toast]);
+  }, [isSuccess, isLoading, setPodcastData, toast]);
 
   const avatarRef = useRef(null);
 
@@ -127,10 +158,18 @@ function NewQuest() {
     avatarRef.current.click();
   }
 
+  function handleFile(e) {
+    const uploadedFile = e.target.files[0];
+    if (!uploadedFile) return;
+    setMusic(uploadedFile);
+    console.log(music);
+  }
+
   async function handleAvatarChange(e) {
     const uploadedFile = e.target.files[0];
     if (!uploadedFile) return;
     setAvatar(uploadedFile);
+    console.log(uploadedFile);
   }
 
   return (
@@ -146,14 +185,14 @@ function NewQuest() {
 
         <Box color={"white"} className={"glass-ui-2"} mt={"2em"}>
           <FormControl isRequired>
-            <FormLabel>Title</FormLabel>
-            <Input name="title" value={questData.title} onChange={onChange} />
+            <FormLabel>Name</FormLabel>
+            <Input name="name" value={podcastData.name} onChange={onChange} />
           </FormControl>
           <FormControl mt={"1em"} isRequired>
             <FormLabel>Description</FormLabel>
             <Input
               name="description"
-              value={questData.description}
+              value={podcastData.description}
               onChange={onChange}
             />
           </FormControl>
@@ -175,7 +214,7 @@ function NewQuest() {
                 <NumberInputField
                   pl={"4em"}
                   name="price"
-                  value={questData.price}
+                  value={podcastData.price}
                   onChange={onChange}
                 />
                 <NumberInputStepper>
@@ -188,20 +227,15 @@ function NewQuest() {
 
           <FormControl mt={"1em"} align={"flex-start"} alignItems={"center"}>
             <FormLabel>Podcast</FormLabel>
-
-            {/* <VisuallyHidden> */}
             <Input
               pt={"3.5px"}
               id="selectImage"
               type="file"
               accept="audio/*"
-              // onChange={handleAvatarChange}
-              // ref={avatarRef}
+              onChange={handleFile}
+              ref={fileRef}
             />
-            {/* </VisuallyHidden> */}
           </FormControl>
-
-          {/*  */}
 
           <FormControl mt={"1em"} align={"flex-start"} mb={"1em"}>
             <FormLabel
@@ -228,10 +262,8 @@ function NewQuest() {
                 <Button
                   fontSize={"14px"}
                   border={"1px solid white"}
-                  // bg={"transparent"}
                   colorScheme={"blue"}
                   color={"black"}
-                  // leftIcon={<AiOutlinePicture />}
                   onClick={triggerOnChangeAvatar}
                   rounded="20px"
                   mb={"1em"}
@@ -244,13 +276,13 @@ function NewQuest() {
                 <Input
                   id="selectImage"
                   type="file"
+                  accept="image/*"
                   onChange={handleAvatarChange}
                   ref={avatarRef}
                 />
               </VisuallyHidden>
             </Box>
           </FormControl>
-          {/*  */}
 
           <Button
             borderWidth={"2px"}
@@ -262,8 +294,8 @@ function NewQuest() {
             px={"1rem"}
             colorScheme={"black"}
             mt={"1.5em"}
-            isLoading={isLoading}
-            onClick={() => createQ()}
+            isLoading={checker}
+            onClick={createPodcast}
           >
             Create
           </Button>

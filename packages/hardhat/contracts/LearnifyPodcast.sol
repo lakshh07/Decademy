@@ -36,6 +36,10 @@ contract LearnifyPodcast is ERC1155, Ownable, ReentrancyGuard {
         uint256 podcastCount;
         string id;
         address payable uploader;
+        string name;
+        string description;
+        string image;
+        string music;
         uint256 price;
         string metadataUrl;
     }
@@ -44,6 +48,10 @@ contract LearnifyPodcast is ERC1155, Ownable, ReentrancyGuard {
         uint256 podcastCount,
         string id,
         address uploader,
+        string name,
+        string description,
+        string image,
+        string music,
         uint256 price,
         string metadataUrl
     );
@@ -56,7 +64,11 @@ contract LearnifyPodcast is ERC1155, Ownable, ReentrancyGuard {
     function createPodcast(
         string memory _id,
         string memory _metadata,
-        uint256 _price
+        uint256 _price,
+        string memory _name,
+        string memory _description,
+        string memory _image,
+        string memory _music
     ) external nonReentrant {
         require(bytes(_id).length > 0, "Id not found");
         require(bytes(_metadata).length > 0, "Metadata not found");
@@ -70,6 +82,10 @@ contract LearnifyPodcast is ERC1155, Ownable, ReentrancyGuard {
             podcastCount,
             _id,
             payable(msg.sender),
+            _name,
+            _description,
+            _image,
+            _music,
             _price,
             _metadata
         );
@@ -77,7 +93,17 @@ contract LearnifyPodcast is ERC1155, Ownable, ReentrancyGuard {
         mint(msg.sender, podcastCount, 1);
         setURI(podcastCount, _metadata);
 
-        emit PodcastCreated(podcastCount, _id, msg.sender, _price, _metadata);
+        emit PodcastCreated(
+            podcastCount,
+            _id,
+            msg.sender,
+            _name,
+            _description,
+            _image,
+            _music,
+            _price,
+            _metadata
+        );
     }
 
     function mintPodcast(string memory _id, uint256 _podcastCounter)

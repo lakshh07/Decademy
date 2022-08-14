@@ -17,6 +17,8 @@ import ViewCourse from "./pages/courses/ViewCourse";
 import ViewRequest from "./pages/courses/ViewRequest";
 import NewCourse from "./pages/courses/NewCourse";
 import NewRequest from "./pages/courses/NewRequest";
+import Community from "./pages/community/Community";
+import Profile from "./pages/profile/Profile";
 
 function App() {
   const [loading, setLoading] = useState(true);
@@ -51,6 +53,10 @@ function App() {
               path="/dashboard/courses/:id/requests/new"
               element={<NewRequest />}
             />
+
+            <Route path="/community" element={<Community />} />
+
+            <Route path="/profile/:userId" element={<Profile />} />
           </Routes>
         </Box>
       </LoadingContext.Provider>

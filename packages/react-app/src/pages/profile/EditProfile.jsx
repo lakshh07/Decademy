@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
   Flex,
   Text,
@@ -12,33 +12,37 @@ import {
   ModalFooter,
   ModalBody,
   ModalCloseButton,
-  Tabs,
-  TabList,
-  TabPanels,
-  Tab,
-  TabPanel,
-  Stack,
   FormControl,
   FormLabel,
   Input,
   InputGroup,
-  useColorModeValue,
   Textarea,
   Spinner,
-  Progress,
   VisuallyHidden,
   Image,
+  useToast,
 } from "@chakra-ui/react";
 import sq from "../../assets/bright-squares.png";
 import man from "../../assets/man.png";
+import { uploadToIpfss } from "../../utils/ipfs";
+import { Blob } from "nft.storage";
+
+import { useAccount, useSigner, useWaitForTransaction } from "wagmi";
+import { learnifyProfileAddress } from "../../utils/contractAddress";
+import profileContractAbi from "../../contracts/ABI/LearnifyProfile.json";
+import { ethers } from "ethers";
+import truncateMiddle from "truncate-middle";
 
 function EditProfile({ isOpen, onClose }) {
   const coverRef = useRef(null);
   const avatarRef = useRef(null);
-
+  const { address } = useAccount();
+  const { data: signer } = useSigner();
+  const toast = useToast();
   const [bio, setBio] = useState("");
   const [name, setName] = useState("");
   const [checker, setChecker] = useState(false);
+  const [hash, setHash] = useState("");
 
   const [cover, setCover] = useState(null);
   const [avatar, setAvatar] = useState(null);
@@ -61,7 +65,66 @@ function EditProfile({ isOpen, onClose }) {
     setAvatar(uploadedFile);
   }
 
-  async function updateProfile(bio, name, setChecker) {}
+  async function updateProfile() {
+    setChecker(true);
+    const avatarUrl = await uploadToIpfss(avatar);
+    const coverUrl = await uploadToIpfss(cover);
+
+    const contract = new ethers.Contract(
+      learnifyProfileAddress,
+      profileContractAbi,
+      signer
+    );
+
+    const json = {
+      name: name,
+      bio: bio,
+      avatar: avatarUrl,
+      cover: coverUrl,
+    };
+    const someData = new Blob([JSON.stringify(json)]);
+
+    const jsonUrl = await uploadToIpfss(someData);
+
+    const result = await contract.updateData(address, jsonUrl);
+    setHash(result.hash);
+  }
+
+  const { isLoading, isSuccess } = useWaitForTransaction({
+    hash: hash,
+  });
+
+  useEffect(() => {
+    isLoading &&
+      toast({
+        title: "Transaction Sent",
+        description: truncateMiddle(hash || "", 5, 4, "..."),
+        status: "info",
+        duration: 3000,
+        isClosable: true,
+        position: "bottom-right",
+        variant: "subtle",
+      });
+
+    if (isSuccess) {
+      toast({
+        title: "Transaction Successfull",
+        status: "success",
+        duration: 3000,
+        isClosable: true,
+        position: "bottom-right",
+        variant: "subtle",
+      });
+      setName("");
+      setBio("");
+      setCover();
+      setAvatar();
+      setChecker(false);
+      setTimeout(() => {
+        onClose();
+      }, 500);
+    }
+  }, [isSuccess, isLoading]);
 
   return (
     <>
@@ -71,12 +134,12 @@ function EditProfile({ isOpen, onClose }) {
         onClose={onClose}
         closeOnOverlayClick={false}
         isCentered
-        size={"full"}
+        size={"xl"}
         zIndex={"999"}
       >
         <ModalOverlay />
         <ModalContent
-          m={"20em 30em 15em !important"}
+          mt={"8em !important"}
           className={"glass-ui"}
           borderRadius={"10px"}
           bg={"blackAlpha.500 !important"}
@@ -95,7 +158,7 @@ function EditProfile({ isOpen, onClose }) {
                 overflow={{ sm: "hidden" }}
               >
                 <Box className={"glass-ui-2"}>
-                  <FormControl>
+                  <FormControl isRequired>
                     <FormLabel fontSize="md" fontWeight="md">
                       Name
                     </FormLabel>
@@ -109,7 +172,7 @@ function EditProfile({ isOpen, onClose }) {
                       />
                     </InputGroup>
                   </FormControl>
-                  <FormControl>
+                  <FormControl isRequired>
                     <FormLabel fontSize="md" mt={"1em"} fontWeight="md">
                       Bio
                     </FormLabel>
@@ -126,7 +189,7 @@ function EditProfile({ isOpen, onClose }) {
 
                   <Flex w={"100%"} mt={"1em"}>
                     <Box mr={"2em"}>
-                      <FormControl align={"center"}>
+                      <FormControl align={"center"} isRequired>
                         <FormLabel mb={"0.5em"} fontSize="md" fontWeight="md">
                           Avatar
                         </FormLabel>
@@ -137,7 +200,7 @@ function EditProfile({ isOpen, onClose }) {
                             boxSize={"120px"}
                             border={"1px solid #E2E8F0"}
                             style={{
-                              borderRadius: "5  px",
+                              borderRadius: "5px",
                             }}
                           />
                           <Flex
@@ -172,7 +235,7 @@ function EditProfile({ isOpen, onClose }) {
                       </FormControl>
                     </Box>
                     <Box flex={1}>
-                      <FormControl>
+                      <FormControl isRequired>
                         <FormLabel mb={"0.5em"} fontSize="md" fontWeight="md">
                           Cover
                         </FormLabel>
@@ -220,20 +283,20 @@ function EditProfile({ isOpen, onClose }) {
             </Box>
           </ModalBody>
           <ModalFooter>
-            <Button
-              className="btn"
-              //   onClick={async () => {
-              //     setChecker(true);
-              //     await update(name, bio);
-              //     setChecker(false);
-              //     setTimeout(() => {
-              //       onClose();
-              //     }, 500);
-              //   }}
-            >
+            <Button className="btn" onClick={updateProfile}>
               {checker && <Spinner mr={4} />}
               {checker ? "Saving.." : "Save"}
             </Button>
+            <Text
+              position={"absolute"}
+              left={"0"}
+              bottom={"0"}
+              p={"0.5em"}
+              fontSize={"12px"}
+              color={"whiteAlpha.700"}
+            >
+              *all details are required
+            </Text>
           </ModalFooter>
         </ModalContent>
       </Modal>

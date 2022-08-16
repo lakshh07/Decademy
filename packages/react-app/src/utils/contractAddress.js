@@ -3,6 +3,10 @@ export const courseFactoryAddress =
   "0xA752ca19907ddA3B17BaC5EDB982518145d1525B";
 export const learnifyMembershipAddress =
   "0x9ea3185C2F9eBe422D8c305a40Fd7a00369C3f8d";
+export const learnifyCommunityAddress =
+  "0x57F9e58B38E82967A1182Ce93A68D28DE1eBD2b8";
+export const learnifyProfileAddress =
+  "0xB32B063bF0afbd876913Ab2595b0FD60b32cd593";
 export const podcastContractAddress =
   "0xEa0C6A6B88826706dA5DFAA0da11c4A46DcE0519";
 // export const podcastContractAddress =

@@ -10,7 +10,7 @@ import {
   Text,
   useDisclosure,
 } from "@chakra-ui/react";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import Navbar from "../../components/Navbar";
 import ECourses from "./ECourses";
 import EditProfile from "./EditProfile";
@@ -19,16 +19,41 @@ import { MdOutlineSettings } from "react-icons/md";
 import sq from "../../assets/bright-squares.png";
 import man from "../../assets/man.png";
 import badge from "../../assets/beg-badge.png";
+import axios from "axios";
+
+import { useProvider } from "wagmi";
+import { learnifyProfileAddress } from "../../utils/contractAddress";
+import profileContractAbi from "../../contracts/ABI/LearnifyProfile.json";
+import { useParams } from "react-router-dom";
+import { ethers } from "ethers";
 
 function Profile() {
   const { setLoading } = useLoadingContext();
   const { onOpen, onClose, isOpen } = useDisclosure();
+  const [profileData, setProfileData] = useState();
+  const { userId } = useParams();
+  const provider = useProvider();
+
+  async function profileDetails() {
+    const contract = new ethers.Contract(
+      learnifyProfileAddress,
+      profileContractAbi,
+      provider
+    );
+
+    const result = await contract.fetchUserData(userId);
+
+    await axios.get(result).then((response) => {
+      setProfileData(response.data);
+      return response.data;
+    });
+    setLoading(false);
+  }
 
   useEffect(() => {
-    setTimeout(() => {
-      setLoading(false);
-    }, 1500);
+    profileDetails();
   }, []);
+
   return (
     <>
       <Navbar />
@@ -46,11 +71,15 @@ function Profile() {
             h={"250px"}
             borderRadius={"10px"}
             border={"1px solid white"}
-            backgroundImage={sq}
+            backgroundImage={
+              profileData && profileData?.cover ? profileData.cover : sq
+            }
             backgroundPosition={"center"}
             backgroundColor="#662EA7"
-            //   backgroundRepeat={profile?.coverPicture ? "no-repeat" : "repeat"}
-            backgroundSize={"20%"}
+            backgroundRepeat={
+              profileData && profileData?.cover ? "no-repeat" : "repeat"
+            }
+            backgroundSize={profileData && profileData?.cover ? "cover" : "20%"}
             align={"right"}
           >
             <IconButton
@@ -74,7 +103,11 @@ function Profile() {
                 borderRadius={"99999"}
               >
                 <Image
-                  src={man}
+                  src={
+                    profileData && profileData?.avatar
+                      ? profileData.avatar
+                      : man
+                  }
                   objectFit="cover"
                   boxSize={"150px"}
                   style={{ borderRadius: "50%" }}
@@ -89,10 +122,12 @@ function Profile() {
                   pt={"0.5em"}
                   color={"white"}
                 >
-                  Lakshay Maini
+                  {profileData && profileData?.name
+                    ? profileData.name
+                    : "Anonymous"}
                 </Heading>
                 <Text pt={"0.5em"} fontSize={"16px"}>
-                  Full-Stack Blockchain Developer
+                  {profileData && profileData?.bio ? profileData.bio : "😈"}
                 </Text>
               </Box>
             </GridItem>

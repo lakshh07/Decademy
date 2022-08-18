@@ -24,6 +24,7 @@ import communityContractAbi from "../../contracts/ABI/LearnifyCommunity.json";
 function Community() {
   const { setLoading } = useLoadingContext();
   const [arrData, setArrData] = useState([]);
+  const [checker, setChecker] = useState(true);
   const messageEl = useRef(null);
 
   useEffect(() => {
@@ -61,6 +62,7 @@ function Community() {
         messages.push(newJson);
       }
       setArrData(messages);
+      setChecker(false);
     }
   }
 
@@ -83,13 +85,13 @@ function Community() {
 
       <Container maxW={"1200px"} my={"3em"}>
         <Box
-          h={"74vh"}
+          h={"76vh"}
           overflowY={"scroll"}
           borderRadius={"5px"}
           ref={messageEl}
           className={"hide-scrollbar"}
         >
-          {loading || !arrData ? (
+          {checker || loading ? (
             <>
               <Flex my="12rem" justifyContent="center" alignItems="center">
                 <Spinner color="white" size="xl" />

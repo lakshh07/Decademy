@@ -1,7 +1,7 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { Container, Flex, Heading, Link, Text } from "@chakra-ui/react";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
-import { NavLink, useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useAccount } from "wagmi";
 import { useLoadingContext } from "../context/loading";
 
@@ -9,7 +9,7 @@ function Navbar() {
   const location = useLocation();
   const { isDisconnected, address } = useAccount();
   const navigate = useNavigate();
-  const { setLoading } = useLoadingContext;
+  const { setLoading } = useLoadingContext();
 
   // useEffect(() => {
   //   if (isDisconnected) {
@@ -18,11 +18,10 @@ function Navbar() {
   //   }
   // }, [isDisconnected]);
 
-  const navLinkStyles = ({ isActive }) => {
-    return {
-      fontWeight: isActive ? "700" : "400",
-    };
-  };
+  function handleUrl(url) {
+    setLoading(true);
+    navigate(`/${url}`);
+  }
 
   return (
     <>
@@ -61,68 +60,57 @@ function Navbar() {
           {location.pathname === "/" ||
           location.pathname === "/membership" ? null : (
             <Flex alignItems={"center"}>
-              <NavLink _hover={{ textDecoration: "none" }} to="/dashboard">
-                <Text
-                  fontSize={"1rem"}
-                  lineHeight={"1.625rem"}
-                  mr={"1em"}
-                  transition="color 0.2s ease"
-                  className="glass-gradient"
-                  fontWeight={
-                    location.pathname === "/dashboard" ||
-                    location.pathname == "/dashboard/*"
-                      ? 700
-                      : 400
-                  }
-                >
-                  Dashboard
-                </Text>
-              </NavLink>
-              {/* <NavLink
-                to="/quests"
-                _hover={{ textDecoration: "none" }}
-                style={navLinkStyles}
+              <Text
+                fontSize={"1rem"}
+                lineHeight={"1.625rem"}
+                mr={"1em"}
+                transition="color 0.2s ease"
+                className="glass-gradient"
+                fontWeight={
+                  location.pathname === "/dashboard" ||
+                  location.pathname === "/dashboard/*"
+                    ? 700
+                    : 400
+                }
+                cursor={"pointer"}
+                onClick={() => {
+                  handleUrl("dashboard");
+                }}
               >
-                <Text
-                  fontSize={"1rem"}
-                  lineHeight={"1.625rem"}
-                  mx={"1em"}
-                  transition="color 10.2s ease"
-                  className="glass-gradient"
-                >
-                  Quests
-                </Text>
-              </NavLink> */}
-              <NavLink
-                to={`/community`}
-                _hover={{ textDecoration: "none" }}
-                style={navLinkStyles}
+                Dashboard
+              </Text>
+
+              <Text
+                fontSize={"1rem"}
+                lineHeight={"1.625rem"}
+                mx={"1em"}
+                transition="color 0.2s ease"
+                className="glass-gradient"
+                fontWeight={location.pathname === "/community" ? 700 : 400}
+                cursor={"pointer"}
+                onClick={() => {
+                  handleUrl("community");
+                }}
               >
-                <Text
-                  fontSize={"1rem"}
-                  lineHeight={"1.625rem"}
-                  mx={"1em"}
-                  transition="color 0.2s ease"
-                  className="glass-gradient"
-                >
-                  Community
-                </Text>
-              </NavLink>
-              <NavLink
-                to={`/profile/${address}`}
-                _hover={{ textDecoration: "none" }}
-                style={navLinkStyles}
+                Community
+              </Text>
+
+              <Text
+                fontSize={"1rem"}
+                lineHeight={"1.625rem"}
+                ml={"1em"}
+                transition="color 0.2s ease"
+                className="glass-gradient"
+                fontWeight={
+                  location.pathname === `/profile/${address}` ? 700 : 400
+                }
+                cursor={"pointer"}
+                onClick={() => {
+                  handleUrl(`profile/${address}`);
+                }}
               >
-                <Text
-                  fontSize={"1rem"}
-                  lineHeight={"1.625rem"}
-                  ml={"1em"}
-                  transition="color 0.2s ease"
-                  className="glass-gradient"
-                >
-                  Profile
-                </Text>
-              </NavLink>
+                Profile
+              </Text>
             </Flex>
           )}
 

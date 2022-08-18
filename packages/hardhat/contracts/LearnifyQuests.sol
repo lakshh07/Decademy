@@ -3,6 +3,7 @@
 pragma solidity ^0.8.15;
 
 import "@openzeppelin/contracts/utils/Counters.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
 import "hardhat/console.sol";
@@ -21,17 +22,11 @@ library SafeMath {
     }
 }
 
-contract Quests is ReentrancyGuard {
+contract LearnifyQuests is Ownable, ReentrancyGuard {
     using SafeMath for uint256;
     using Counters for Counters.Counter;
 
     Counters.Counter private _questCount;
-
-    address payable owner;
-
-    constructor() {
-        owner = payable(msg.sender);
-    }
 
     struct Quest {
         uint256 id;
@@ -152,5 +147,9 @@ contract Quests is ReentrancyGuard {
             currentIndex += 1;
         }
         return quests;
+    }
+
+    function deleteQuest(uint256 _id) external nonReentrant {
+        delete idToQuest[_id];
     }
 }

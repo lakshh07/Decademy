@@ -25,7 +25,7 @@ import matic from "../../assets/matic.svg";
 
 import { useWaitForTransaction, useAccount, useSigner } from "wagmi";
 import { questsAddress } from "../../utils/contractAddress";
-import questContractAbi from "../../contracts/ABI/Quests.json";
+import questContractAbi from "../../contracts/ABI/LearnifyQuests.json";
 import { v4 as uuidv4 } from "uuid";
 import Navbar from "../../components/Navbar";
 import { ethers } from "ethers";
@@ -119,7 +119,7 @@ function NewQuest() {
   return (
     <>
       <Navbar />
-      <Container maxW={"1200px"} my={"3.5rem"}>
+      <Container maxW={"1200px"} my={"3.5rem"} pb={"4em"}>
         <Backward />
 
         <Heading fontSize={"2.1rem"} color={"white"} lineHeight={"2.5rem"}>
@@ -213,9 +213,10 @@ function NewQuest() {
 
           <Button
             borderWidth={"2px"}
-            borderColor={"rgb(10 10 10/1)"}
+            borderColor={"white"}
             borderRadius={"0.625rem"}
-            bg={"rgb(10 10 10/1)"}
+            bg={"white"}
+            color={"black"}
             py={"0.375rem"}
             px={"1rem"}
             colorScheme={"black"}

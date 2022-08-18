@@ -39,6 +39,7 @@ import Lottie from "react-lottie";
 
 import {
   useAccount,
+  useContractRead,
   useContractReads,
   useProvider,
   useSigner,
@@ -62,30 +63,22 @@ function Podcasts() {
   const [duration, setDuration] = useState();
   const [postHash, setPostHash] = useState();
   const [checker, setChecker] = useState();
+  const [owner, setOwner] = useState("");
 
   const {
     data: fetchData,
     isFetching,
     isLoading: loading,
-  } = useContractReads({
-    contracts: [
-      {
-        addressOrName: podcastContractAddress,
-        contractInterface: podcastContractAbi,
-        functionName: "fetchPodcast",
-        watch: true,
-      },
-      {
-        addressOrName: podcastContractAddress,
-        contractInterface: podcastContractAbi,
-        functionName: "owner",
-      },
-    ],
+  } = useContractRead({
+    addressOrName: podcastContractAddress,
+    contractInterface: podcastContractAbi,
+    functionName: "fetchPodcast",
+    watch: true,
   });
 
   useEffect(() => {
     setLength(
-      fetchData[0]?.filter((list) => {
+      fetchData?.filter((list) => {
         return list.id;
       }).length
     );
@@ -163,13 +156,18 @@ function Podcasts() {
     setChecker(result.toString());
   }
 
+  async function fetchOwner() {
+    const result = await contract.owner();
+    setOwner(result);
+  }
+
   async function burnFrom(from, podcastCounter) {
     const contract = new ethers.Contract(
       podcastContractAddress,
       podcastContractAbi,
       signer
     );
-    console.log(podcastCounter);
+    // console.log(podcastCounter);
     const result = await contract.burn(from, podcastCounter, 1);
     setPostHash(result.hash);
   }
@@ -231,6 +229,7 @@ function Podcasts() {
     setTimeout(() => {
       setLoading(false);
     }, 1500);
+    fetchOwner();
   }, []);
 
   useEffect(() => {
@@ -297,14 +296,14 @@ function Podcasts() {
                 <Spinner color="white" size="xl" />
               </Flex>
             </>
-          ) : fetchData[0]?.length ? (
+          ) : fetchData?.length ? (
             <>
               <Grid
                 mt={"1.5rem"}
                 templateColumns={"repeat(3, minmax(0px, 1fr))"}
                 gap={"2rem"}
               >
-                {fetchData[0]
+                {fetchData
                   ?.filter((list) => {
                     return list.id;
                   })
@@ -409,7 +408,7 @@ function Podcasts() {
                               </Tag>
 
                               {list.uploader === address ||
-                              fetchData[1] === address ? (
+                              owner === address ? (
                                 <IconButton
                                   ml={"10px"}
                                   py={"0.25rem"}

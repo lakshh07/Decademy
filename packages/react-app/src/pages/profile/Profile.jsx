@@ -21,7 +21,7 @@ import man from "../../assets/man.png";
 import badge from "../../assets/beg-badge.png";
 import axios from "axios";
 
-import { useProvider } from "wagmi";
+import { useAccount, useProvider } from "wagmi";
 import { learnifyProfileAddress } from "../../utils/contractAddress";
 import profileContractAbi from "../../contracts/ABI/LearnifyProfile.json";
 import { useParams } from "react-router-dom";
@@ -33,6 +33,7 @@ function Profile() {
   const [profileData, setProfileData] = useState();
   const { userId } = useParams();
   const provider = useProvider();
+  const { address } = useAccount();
 
   async function profileDetails() {
     const contract = new ethers.Contract(
@@ -41,13 +42,19 @@ function Profile() {
       provider
     );
 
-    const result = await contract.fetchUserData(userId);
+    const result = await contract.fetchUserData(address);
 
-    await axios.get(result).then((response) => {
-      setProfileData(response.data);
-      return response.data;
-    });
-    setLoading(false);
+    if (result) {
+      await axios.get(result).then((response) => {
+        setProfileData(response.data);
+        return response.data;
+      });
+      setLoading(false);
+    } else {
+      setTimeout(() => {
+        setLoading(false);
+      }, 1500);
+    }
   }
 
   useEffect(() => {

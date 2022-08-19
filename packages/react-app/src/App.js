@@ -19,6 +19,7 @@ import NewCourse from "./pages/courses/NewCourse";
 import NewRequest from "./pages/courses/NewRequest";
 import Community from "./pages/community/Community";
 import Profile from "./pages/profile/Profile";
+import Membership from "./pages/Membership/Membership";
 
 function App() {
   const [loading, setLoading] = useState(true);
@@ -29,6 +30,8 @@ function App() {
         <Box className="body-bg">
           <Routes>
             <Route path="/" element={<Hero />} />
+
+            <Route path="/membership" element={<Membership />} />
 
             <Route path="dashboard" element={<Dashboard />} />
 

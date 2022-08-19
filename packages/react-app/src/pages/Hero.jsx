@@ -97,7 +97,7 @@ function Hero() {
                 display={visible ? "block" : "none"}
                 onClick={() => {
                   setLoading(true);
-                  navigate("/dashboard");
+                  navigate("/membership");
                 }}
               >
                 Gets Started

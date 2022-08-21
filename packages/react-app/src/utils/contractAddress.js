@@ -1,6 +1,6 @@
 export const questsAddress = "0x1B285A7D8Db520C9eFcDE1853Af4c40b3F2C057e";
 export const courseFactoryAddress =
-  "0xA752ca19907ddA3B17BaC5EDB982518145d1525B";
+  "0xE5F37C29c7C6cD5590Fbaf645Ef25F19613AD5AF";
 export const learnifyMembershipAddress =
   "0x9ea3185C2F9eBe422D8c305a40Fd7a00369C3f8d";
 export const learnifyCommunityAddress =

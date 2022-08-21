@@ -10,6 +10,8 @@ import {
   Flex,
   Button,
   Spinner,
+  IconButton,
+  useToast,
 } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
 import { useLoadingContext } from "../../context/loading";
@@ -21,16 +23,29 @@ import { useNavigate } from "react-router-dom";
 import gradiant from "../../assets/gradiant.png";
 import notFound from "../../assets/page-not-found.png";
 
-import { useContractRead, useProvider } from "wagmi";
+import {
+  useAccount,
+  useContractRead,
+  useProvider,
+  useSigner,
+  useWaitForTransaction,
+} from "wagmi";
 import { courseFactoryAddress } from "../../utils/contractAddress";
 import courseContractFactoryAbi from "../../contracts/ABI/CourseFactory.json";
 import { getCourseContract } from "../../utils/courseContract";
+import { ethers } from "ethers";
+import { RiDeleteBin5Line } from "react-icons/ri";
 
 function Courses() {
   const { setLoading } = useLoadingContext();
   const navigate = useNavigate();
   const provider = useProvider();
+  const toast = useToast();
+  const { data: signer } = useSigner();
+  const { address } = useAccount();
   const [courseData, setCourseData] = useState();
+  const [owner, setOwner] = useState();
+  const [hash, setHash] = useState("");
 
   useEffect(() => {
     setTimeout(() => {
@@ -71,15 +86,70 @@ function Courses() {
     setCourseData(courseInfo);
   };
 
+  async function getowner() {
+    const contract = new ethers.Contract(
+      courseFactoryAddress,
+      courseContractFactoryAbi,
+      provider
+    );
+
+    const result = await contract.owner();
+    setOwner(result);
+  }
+
+  async function delCourse(courseAddress) {
+    const contract = new ethers.Contract(
+      courseFactoryAddress,
+      courseContractFactoryAbi,
+      signer
+    );
+
+    const result = await contract.deleteCourse(courseAddress);
+    setHash(result.hash);
+  }
+
+  const { isLoading: deleteLoading, isSuccess } = useWaitForTransaction({
+    hash: hash,
+  });
+
+  useEffect(() => {
+    deleteLoading &&
+      toast({
+        title: "Transaction Sent",
+        description: truncateMiddle(hash || "", 5, 4, "..."),
+        status: "info",
+        duration: 4000,
+        isClosable: true,
+        position: "bottom-right",
+        variant: "subtle",
+      });
+
+    isSuccess &&
+      toast({
+        title: "Transaction Successfull",
+        status: "success",
+        duration: 3000,
+        isClosable: true,
+        position: "bottom-right",
+        variant: "subtle",
+      });
+
+    isSuccess && setHash("");
+  }, [isSuccess, deleteLoading]);
+
   useEffect(() => {
     getCourseSummaries();
   }, [isFetching]);
+
+  useEffect(() => {
+    getowner();
+  }, []);
 
   return (
     <>
       <Navbar />
 
-      <Container my={"4rem"} maxW={"1200px"}>
+      <Container my={"4rem"} maxW={"1200px"} pb={"6em"}>
         <Box>
           <Flex alignItems={"center"} justifyContent={"space-between"}>
             <Flex alignItems={"center"}>
@@ -179,20 +249,45 @@ function Courses() {
                                 </Box>
 
                                 <Box bg={"white"} py={"1.2rem"} px={"1.5rem"}>
-                                  <Tag
-                                    borderWidth={"2px"}
-                                    borderColor={"rgb(10 10 10/1)"}
-                                    borderRadius={"9999px"}
-                                    textTransform={"uppercase"}
-                                    fontWeight={600}
-                                    fontSize={"0.75rem"}
-                                    lineHeight={"1rem"}
-                                    py={"0.25rem"}
-                                    px={"0.75rem"}
-                                    bg={"rgb(183 234 213)"}
-                                  >
-                                    course
-                                  </Tag>
+                                  <Flex alignItems={"center"}>
+                                    <Tag
+                                      borderWidth={"2px"}
+                                      borderColor={"rgb(10 10 10/1)"}
+                                      borderRadius={"9999px"}
+                                      textTransform={"uppercase"}
+                                      fontWeight={600}
+                                      fontSize={"0.75rem"}
+                                      lineHeight={"1rem"}
+                                      py={"0.25rem"}
+                                      px={"0.75rem"}
+                                      bg={"rgb(183 234 213)"}
+                                    >
+                                      course
+                                    </Tag>
+                                    {list.author === address ||
+                                    owner === address ? (
+                                      <IconButton
+                                        ml={"10px"}
+                                        py={"0.25rem"}
+                                        px={"0.75rem"}
+                                        variant={"outline"}
+                                        borderColor={"rgb(10 10 10/1)"}
+                                        borderRadius={"9999px"}
+                                        borderWidth={"2px"}
+                                        colorScheme={"red"}
+                                        bg={"red.100"}
+                                        fontSize={"1em"}
+                                        isLoading={deleteLoading}
+                                        size={"sm"}
+                                        icon={
+                                          <RiDeleteBin5Line color={"red"} />
+                                        }
+                                        onClick={() => delCourse(list.address)}
+                                      />
+                                    ) : (
+                                      <></>
+                                    )}
+                                  </Flex>
                                   <Heading
                                     mt={"1rem"}
                                     fontSize={"1.5rem"}

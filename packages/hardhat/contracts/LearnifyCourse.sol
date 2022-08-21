@@ -209,12 +209,12 @@ contract CourseContract {
         maintainerVotes[ID][msg.sender] = true;
         Request storage request = listOfRequests[ID];
         request.approvers++;
-        if (request.approvers >= numOfMaintainers) {
-            approveRequest(ID);
-        }
+        // if (request.approvers >= numOfMaintainers) {
+        //     approveRequest(ID);
+        // }
     }
 
-    function approveRequest(uint256 ID) internal {
+    function approveRequest(uint256 ID) external {
         //Approves a request at index ID in list of requests array,
         //changes the approver address and confirmed boolean,
         //pushes all the new modules stored in request module mapping, into current modules array mapping.

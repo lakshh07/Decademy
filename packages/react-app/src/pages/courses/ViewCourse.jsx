@@ -2,6 +2,7 @@ import {
   Box,
   Button,
   Container,
+  Divider,
   Flex,
   Heading,
   Spinner,
@@ -14,13 +15,15 @@ import Backward from "../../components/Backward";
 import { getCourseContract } from "../../utils/courseContract";
 import { useProvider } from "wagmi";
 import { getTextFromIPFS } from "../../utils/ipfs";
-import parse from "html-react-parser";
-import DOMPurify from "isomorphic-dompurify";
 import { useParams } from "react-router-dom";
 import Navbar from "../../components/Navbar";
+import "../../css/markdown.css";
+
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 function ViewCourse() {
-  const { setLoading, loading } = useLoadingContext();
+  const { setLoading } = useLoadingContext();
   const provider = useProvider();
   const { id, version } = useParams();
   const [content, setContent] = useState();
@@ -53,19 +56,11 @@ function ViewCourse() {
     getModules();
   }, []);
 
-  const htmlFrom = (htmlString) => {
-    const cleanHtmlString = DOMPurify.sanitize(htmlString, {
-      USE_PROFILES: { html: true },
-    });
-    const html = parse(cleanHtmlString);
-    return html;
-  };
-
   return (
     <>
       <Navbar />
 
-      <Container maxW={"1200px"} my={"4rem"}>
+      <Container maxW={"1200px"} my={"4rem"} pb={"5em"}>
         <Backward />
 
         <Flex alignItems={"center"} justifyContent={"space-between"}>
@@ -114,25 +109,43 @@ function ViewCourse() {
             mt={"1.5em"}
             className={"glass-ui"}
           >
-            <Text fontWeight={500} fontSize={"26px"}>
+            <Text fontWeight={700} fontSize={"30px"}>
               {content && content[selectedContent]?.name}
             </Text>
-            <Text mt={"0.5em"} lineHeight={"28px"}>
+            <Text mt={"0.5em"} lineHeight={"28px"} fontSize={"16px"}>
               {content && content[selectedContent]?.description}
             </Text>
 
-            <Heading mt={"1em"} fontWeight={600} fontSize={"24px"}>
+            <Heading
+              mt={"2em"}
+              fontWeight={600}
+              color={"white"}
+              fontSize={"24px"}
+            >
               Learning Materials
             </Heading>
-            <Box pl={"1.5em"} mt={"0.5em"}>
-              {content && htmlFrom(content[selectedContent]?.materials)}
+            <Divider />
+            <Box px={"1.5em"} mt={"0.5em"} className={"courseContent"}>
+              <ReactMarkdown
+                children={content[selectedContent]?.materials}
+                remarkPlugins={[remarkGfm]}
+              />
             </Box>
 
-            <Heading fontWeight={600} mt={"1em"} fontSize={"24px"}>
+            <Heading
+              fontWeight={600}
+              mt={"2em"}
+              color={"white"}
+              fontSize={"24px"}
+            >
               Questions
             </Heading>
-            <Box pl={"1.5em"} mt={"0.5em"}>
-              {content && htmlFrom(content[selectedContent]?.questions)}
+            <Divider />
+            <Box px={"1.5em"} mt={"0.5em"} className={"courseContent"}>
+              <ReactMarkdown
+                children={content[selectedContent]?.questions}
+                remarkPlugins={[remarkGfm]}
+              />
             </Box>
           </Box>
         )}

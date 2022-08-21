@@ -1,31 +1,29 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useLoadingContext } from "../../context/loading";
 import {
   Box,
   Button,
   Container,
   Divider,
+  Flex,
   FormControl,
   FormLabel,
   Heading,
   Input,
-  Text,
   useToast,
+  VisuallyHidden,
 } from "@chakra-ui/react";
 import Backward from "../../components/Backward";
-import { AiOutlineInbox } from "react-icons/ai";
-import { message, Upload } from "antd";
-import "antd/dist/antd.css";
 import Module from "../../components/Module";
 
-import { newUploadMarkdownData, uploadToIpfs } from "../../utils/ipfs";
+import { uploadToIpfss } from "../../utils/ipfs";
 import { useSigner } from "wagmi";
 import { courseFactoryAddress } from "../../utils/contractAddress";
 import { getCourseFactoryContract } from "../../utils/courseContract";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../../components/Navbar";
-
-const { Dragger } = Upload;
+import { Blob } from "nft.storage";
+import sq from "../../assets/bright-squares.png";
 
 function NewCourse() {
   const { setLoading } = useLoadingContext();
@@ -34,9 +32,11 @@ function NewCourse() {
     description: "",
     image: "",
   });
+  const coverRef = useRef(null);
   const [courseModuleList, setCourseModuleList] = useState([]);
   const [courseLoading, setCourseLoading] = useState(false);
   const [moduleSave, setModuleSave] = useState(true);
+  const [cover, setCover] = useState(null);
   const { data: signer } = useSigner();
   const toast = useToast();
   const navigate = useNavigate();
@@ -54,27 +54,15 @@ function NewCourse() {
     }));
   }
 
-  const props = {
-    name: "file",
-    multiple: false,
+  function triggerOnChangeCover() {
+    coverRef.current.click();
+  }
 
-    onChange(e) {
-      const { status } = e.file;
-      console.log(e.file);
-      setCourseDetails({ image: e.file.originFileObj });
-
-      if (status === "done") {
-        message.success(`${e.file.name} file uploaded successfully.`);
-      } else if (status === "error") {
-        message.error(`${e.file.name} file upload failed.`);
-      }
-    },
-
-    onDrop(e) {
-      console.log("Dropped files", e.dataTransfer.files[0]);
-      setCourseDetails({ image: e.dataTransfer.files[0] });
-    },
-  };
+  async function handleCoverChange(e) {
+    const uploadedFile = e.target.files[0];
+    if (!uploadedFile) return;
+    setCover(uploadedFile);
+  }
 
   // ////////////////////
 
@@ -87,8 +75,10 @@ function NewCourse() {
     for (const modulii of courseModuleList) {
       names.push(modulii.moduleName);
       descriptions.push(modulii.moduleDes);
-      const materialsURL = await newUploadMarkdownData(modulii.moduleMaterial);
-      const questionsURL = await newUploadMarkdownData(modulii.moduleQues);
+      const mData = new Blob([modulii.moduleMaterial]);
+      const qData = new Blob([modulii.moduleQues]);
+      const materialsURL = await uploadToIpfss(mData);
+      const questionsURL = await uploadToIpfss(qData);
       materials.push(materialsURL);
       questions.push(questionsURL);
     }
@@ -100,16 +90,12 @@ function NewCourse() {
     const { names, descriptions, materials, questions } =
       await processModuleData();
 
-    const imageUrl = await uploadToIpfs(courseDetails.image);
-
-    console.log(names, descriptions, materials, questions);
-    // console.log(imageUrl);
+    const imageUrl = await uploadToIpfss(cover);
     const contract = await getCourseFactoryContract(
       courseFactoryAddress,
       signer
     );
 
-    console.log(courseDetails.title, courseDetails.description);
     const tx = await contract.createCourse(
       courseDetails.title,
       courseDetails.description,
@@ -167,26 +153,46 @@ function NewCourse() {
               onChange={onChange}
             />
           </FormControl>
-        </Box>
 
-        <Box mt={"2em"}>
-          <Dragger {...props} className={"glass-ui"}>
-            <Box align={"center"} className="ant-upload-drag-icon">
-              <AiOutlineInbox
-                style={{
-                  fontSize: "3rem",
-                  color: "#3FA9FF",
-                  marginBottom: "10px",
-                }}
-              />
-            </Box>
-            <Text
-              color={"whiteAlpha.700 !important"}
-              className="ant-upload-text"
+          <FormControl mt={"1em"} isRequired>
+            <FormLabel mb={"0.5em"} fontSize="md" fontWeight="md">
+              Cover Picture
+            </FormLabel>
+
+            <Flex
+              w={"410px"}
+              h={"210px"}
+              backgroundImage={cover ? URL.createObjectURL(cover) : sq}
+              border={"1px solid #E2E8F0"}
+              backgroundPosition={"center"}
+              backgroundColor="#662EA7"
+              borderRadius={"5px"}
+              backgroundRepeat={cover ? "no-repeat" : "repeat"}
+              backgroundSize={cover ? "cover" : "20%"}
+              align={"center"}
+              justifyContent={"center"}
             >
-              Click or drag cover image to this area to upload
-            </Text>
-          </Dragger>
+              <Button
+                border={"1px solid white"}
+                colorScheme={"blackAlpha"}
+                onClick={triggerOnChangeCover}
+                rounded="20px"
+                size={"sm"}
+                fontSize={"12px"}
+              >
+                {cover ? `Change` : `Set`}
+              </Button>
+            </Flex>
+
+            <VisuallyHidden>
+              <Input
+                id="selectImage"
+                type="file"
+                onChange={handleCoverChange}
+                ref={coverRef}
+              />
+            </VisuallyHidden>
+          </FormControl>
         </Box>
 
         <Box>

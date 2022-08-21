@@ -14,12 +14,13 @@ import {
 import Backward from "../../components/Backward";
 import Module from "../../components/Module";
 
-import { newUploadMarkdownData } from "../../utils/ipfs";
+import { uploadToIpfss } from "../../utils/ipfs";
 import { useSigner, useProvider, useContractRead } from "wagmi";
 import { getCourseContract } from "../../utils/courseContract";
 import courseContractAbi from "../../contracts/ABI/CourseContract.json";
 import { useNavigate, useParams } from "react-router-dom";
 import Navbar from "../../components/Navbar";
+import { Blob } from "nft.storage";
 
 function NewRequest() {
   const { setLoading } = useLoadingContext();
@@ -90,8 +91,10 @@ function NewRequest() {
     for (const moduli of courseModuleList) {
       names.push(moduli.moduleName);
       descriptions.push(moduli.moduleDes);
-      const materialsURL = await newUploadMarkdownData(moduli.moduleMaterial);
-      const questionsURL = await newUploadMarkdownData(moduli.moduleQues);
+      const mData = new Blob([moduli.moduleMaterial]);
+      const qData = new Blob([moduli.moduleQues]);
+      const materialsURL = await uploadToIpfss(mData);
+      const questionsURL = await uploadToIpfss(qData);
       materials.push(materialsURL);
       questions.push(questionsURL);
     }
@@ -146,7 +149,7 @@ function NewRequest() {
 
     setSelectedVersion(data?.toNumber() - 1);
     setVersions(data?.toNumber());
-  }, [id]);
+  }, []);
 
   return (
     <>

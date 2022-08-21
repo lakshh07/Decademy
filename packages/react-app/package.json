@@ -33,6 +33,7 @@
     "react-scripts": "5.0.1",
     "react-use": "^17.4.0",
     "react-useanimations": "^2.0.8",
+    "remark-gfm": "^3.0.1",
     "truncate-middle": "^1.0.6",
     "uuid": "^8.3.2",
     "wagmi": "^0.6.0",

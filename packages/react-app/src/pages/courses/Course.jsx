@@ -22,12 +22,12 @@ import Backward from "../../components/Backward";
 
 import {
   useAccount,
+  useContractRead,
   useContractWrite,
   usePrepareContractWrite,
   useProvider,
   useWaitForTransaction,
 } from "wagmi";
-import { useContractReads } from "wagmi";
 import { courseFactoryAddress } from "../../utils/contractAddress";
 import courseContractFactoryAbi from "../../contracts/ABI/CourseFactory.json";
 import courseContractAbi from "../../contracts/ABI/CourseContract.json";
@@ -52,17 +52,14 @@ function Course() {
     }, 1500);
   }, []);
 
-  const { data: fetchCourse, isLoading } = useContractReads({
-    contracts: [
-      {
-        addressOrName: id,
-        contractInterface: courseContractAbi,
-        functionName: "getSummaryInformation",
-      },
-    ],
+  const { data: fetchCourse, isLoading } = useContractRead({
+    addressOrName: id,
+    contractInterface: courseContractAbi,
+    functionName: "getSummaryInformation",
     watch: true,
   });
 
+  // console.log(fetchCourse);
   const getModules = async () => {
     const modulesToReturn = [];
     const contract = getCourseContract(id, provider);
@@ -164,7 +161,7 @@ function Course() {
     <>
       <Navbar />
 
-      <Container my={"4rem"} maxW={"1200px"}>
+      <Container my={"4rem"} maxW={"1200px"} pb={"5em"}>
         <Backward />
 
         {isLoading ? (
@@ -182,7 +179,7 @@ function Course() {
             >
               <Box>
                 <Heading color={"white"} fontWeight={600}>
-                  {fetchCourse?.length ? fetchCourse[0][0] : null}
+                  {fetchCourse?.length ? fetchCourse[0] : null}
                 </Heading>
               </Box>
 
@@ -243,7 +240,7 @@ function Course() {
                 overflow={"hidden"}
               >
                 <Blockies
-                  seed={fetchCourse.length && fetchCourse[0][3]}
+                  seed={fetchCourse.length && fetchCourse[3]}
                   color="#dfe"
                   bgcolor="#aaa"
                   default="-1"
@@ -258,7 +255,7 @@ function Course() {
                 fontWeight={600}
               >
                 {truncateMiddle(
-                  (fetchCourse.length && fetchCourse[0][3]) || "",
+                  (fetchCourse.length && fetchCourse[3]) || "",
                   5,
                   4,
                   "..."
@@ -280,7 +277,7 @@ function Course() {
                   bg={"white"}
                   w={"100%"}
                   h={"500px"}
-                  backgroundImage={fetchCourse.length && fetchCourse[0][2]}
+                  backgroundImage={fetchCourse.length && fetchCourse[2]}
                   backgroundPosition={"center"}
                   backgroundColor="#662EA7"
                   backgroundRepeat={"no-repeat"}
@@ -290,7 +287,7 @@ function Course() {
 
               <Box color={"white"} px={"1em"}>
                 <Text fontSize={"18px"} lineHeight={"28px"}>
-                  {fetchCourse.length && fetchCourse[0][1]}
+                  {fetchCourse.length && fetchCourse[1]}
                 </Text>
 
                 <Flex alignItems={"center"} mt={"3.5em"} mb={"0.2em"}>
@@ -363,21 +360,26 @@ function Course() {
                     Go to Course
                   </Button>
                 ) : (
-                  <Button
-                    borderWidth={"2px"}
-                    borderColor={"white"}
-                    borderRadius={"0.625rem"}
-                    bg={"white"}
-                    color={"black"}
-                    py={"0.375rem"}
-                    px={"1rem"}
-                    colorScheme={"white"}
-                    mt={"2em"}
-                    onClick={() => write()}
-                    isLoading={enrolling}
-                  >
-                    Enroll Now
-                  </Button>
+                  <>
+                    <Text fontSize={"12px"} mt={"2em"} mb={"5px"}>
+                      *Free
+                    </Text>
+
+                    <Button
+                      borderWidth={"2px"}
+                      borderColor={"white"}
+                      borderRadius={"0.625rem"}
+                      bg={"white"}
+                      color={"black"}
+                      py={"0.375rem"}
+                      px={"1rem"}
+                      colorScheme={"white"}
+                      onClick={() => write()}
+                      isLoading={enrolling}
+                    >
+                      Enroll Now
+                    </Button>
+                  </>
                 )}
 
                 <PullRequests

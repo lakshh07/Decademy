@@ -7,7 +7,7 @@ import {
   Input,
   Text,
 } from "@chakra-ui/react";
-import React, { useState } from "react";
+import React from "react";
 import { Form, Space } from "antd";
 import MdEditor from "react-markdown-editor-lite";
 import "react-markdown-editor-lite/lib/index.css";
@@ -18,7 +18,6 @@ const mdParser = new MarkdownIt();
 
 function Module({ setCourseModuleList, setModuleSave }) {
   const onFinish = (values) => {
-    console.log("Received values of form:", values);
     setCourseModuleList(values.modules);
     setModuleSave(false);
   };
@@ -42,7 +41,7 @@ function Module({ setCourseModuleList, setModuleSave }) {
                   borderWidth={"2px"}
                   borderColor={"white"}
                   borderRadius={"0.625rem"}
-                  color={"black"}
+                  color={"white"}
                   py={"0.375rem"}
                   px={"1rem"}
                   colorScheme="whatsapp"
@@ -86,7 +85,7 @@ function Module({ setCourseModuleList, setModuleSave }) {
                         mt={"1em"}
                       >
                         <FormLabel color={"white"}>Module Name</FormLabel>
-                        <Input className="wi" />
+                        <Input className="wi" color={"white"} />
                       </FormControl>
                     </Form.Item>
                     <Form.Item
@@ -103,7 +102,7 @@ function Module({ setCourseModuleList, setModuleSave }) {
                         <FormLabel color={"white"}>
                           Module Description
                         </FormLabel>
-                        <Input />
+                        <Input color={"white"} />
                       </FormControl>
                     </Form.Item>
                     <Form.Item
@@ -122,7 +121,6 @@ function Module({ setCourseModuleList, setModuleSave }) {
                           <MdEditor
                             style={{ height: "500px" }}
                             renderHTML={(text) => mdParser.render(text)}
-                            //   onChange={handleEditorChange}
                             placeholder="whats on your mind..."
                             fontSize={"20px"}
                             name="content"
@@ -146,7 +144,6 @@ function Module({ setCourseModuleList, setModuleSave }) {
                           <MdEditor
                             style={{ height: "250px" }}
                             renderHTML={(text) => mdParser.render(text)}
-                            //   onChange={handleEditorChange}
                             placeholder="whats on your mind..."
                             fontSize={"20px"}
                             name="content"
@@ -158,7 +155,7 @@ function Module({ setCourseModuleList, setModuleSave }) {
                     <Button
                       borderWidth={"2px"}
                       borderColor={"white"}
-                      color={"black"}
+                      color={"white"}
                       borderRadius={"0.625rem"}
                       py={"0.375rem"}
                       px={"1rem"}
@@ -183,10 +180,10 @@ function Module({ setCourseModuleList, setModuleSave }) {
                     borderRadius={"0.625rem"}
                     p={"0.500rem 1rem 0.250rem"}
                     colorScheme="yellow"
-                    htmlType="submit"
                     alignItems={"right"}
                     mt={"1em"}
                     type={"primary"}
+                    color={"white"}
                   >
                     Save
                   </Button>

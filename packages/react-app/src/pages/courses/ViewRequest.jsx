@@ -15,18 +15,29 @@ import ReactMarkdown from "react-markdown";
 
 import courseContractAbi from "../../contracts/ABI/CourseContract.json";
 import { getCourseContract } from "../../utils/courseContract";
-import { useContractWrite, useProvider, useWaitForTransaction } from "wagmi";
+import {
+  useAccount,
+  useProvider,
+  useSigner,
+  useWaitForTransaction,
+} from "wagmi";
 import { getTextFromIPFS } from "../../utils/ipfs";
 import { useParams } from "react-router-dom";
 import Navbar from "../../components/Navbar";
+import remarkGfm from "remark-gfm";
+import { ethers } from "ethers";
 
 function VoteRequest() {
   const { setLoading } = useLoadingContext();
   const provider = useProvider();
+  const { data: signer } = useSigner();
+  const { address } = useAccount();
   const { id, reqId } = useParams();
 
   const [requestSummary, setRequestSummary] = useState();
   const [request, setRequest] = useState();
+  const [hash, setHash] = useState("");
+  const [owner, setOwner] = useState();
 
   useEffect(() => {
     setTimeout(() => {
@@ -79,15 +90,26 @@ function VoteRequest() {
     setRequest(modulesToReturn);
   };
 
-  const { data, write } = useContractWrite({
-    addressOrName: id,
-    contractInterface: courseContractAbi,
-    functionName: "voteRequest",
-    args: [reqId],
-  });
+  const contract = new ethers.Contract(id, courseContractAbi, signer);
+
+  async function voteToReq() {
+    const result = await contract.voteRequest(reqId);
+    setHash(result.hash);
+  }
+  async function approveReq() {
+    const result = await contract.approveRequest(reqId);
+    setHash(result.hash);
+  }
+
+  async function getOwner() {
+    const contract = new ethers.Contract(id, courseContractAbi, provider);
+
+    const result = await contract.manager();
+    setOwner(result);
+  }
 
   const { isLoading, isSuccess } = useWaitForTransaction({
-    hash: data?.hash,
+    hash: hash,
   });
 
   useEffect(() => {
@@ -97,33 +119,53 @@ function VoteRequest() {
   useEffect(() => {
     getRequestSummary();
     getRequest();
+    getOwner();
   }, []);
 
   return (
     <>
       <Navbar />
 
-      <Container my={"4em"} maxW={"1200px"}>
+      <Container my={"4em"} maxW={"1200px"} pb={"5em"}>
         <Backward />
 
         <Flex alignItems={"center"} justifyContent={"space-between"}>
           <Heading fontSize={"32px"} color={"white"} fontWeight={600}>
             Course Pull Request
           </Heading>
-          <Button
-            borderWidth={"2px"}
-            borderColor={"white"}
-            borderRadius={"0.625rem"}
-            color={"black"}
-            bg={"white"}
-            py={"0.375rem"}
-            px={"1rem"}
-            colorScheme={"white"}
-            isLoading={isLoading}
-            onClick={() => write()}
-          >
-            Vote to Request
-          </Button>
+          <Flex alignItems={"center"}>
+            {owner === address && (
+              <Button
+                borderWidth={"2px"}
+                borderColor={"white"}
+                borderRadius={"0.625rem"}
+                color={"black"}
+                py={"0.375rem"}
+                px={"1rem"}
+                mr={"10px"}
+                isDisabled={requestSummary?.approved ? true : false}
+                colorScheme={"whatsapp"}
+                isLoading={isLoading}
+                onClick={() => approveReq()}
+              >
+                Approve
+              </Button>
+            )}
+            <Button
+              borderWidth={"2px"}
+              borderColor={"white"}
+              borderRadius={"0.625rem"}
+              color={"black"}
+              bg={"white"}
+              py={"0.375rem"}
+              px={"1rem"}
+              colorScheme={"white"}
+              isLoading={isLoading}
+              onClick={() => voteToReq()}
+            >
+              Vote to Request
+            </Button>
+          </Flex>
         </Flex>
 
         <Text
@@ -215,18 +257,41 @@ function VoteRequest() {
                     {list.description}
                   </Text>
 
-                  <Heading mt={"1em"} fontWeight={600} fontSize={"24px"}>
+                  <Heading
+                    color={"white"}
+                    mt={"2em"}
+                    fontWeight={600}
+                    fontSize={"24px"}
+                  >
                     Learning Materials
                   </Heading>
-                  <Text lineHeight={"28px"} pl={"1.5em"} mt={"0.5em"}>
-                    <ReactMarkdown>{list.materials}</ReactMarkdown>
+                  <Divider />
+                  <Text
+                    lineHeight={"28px"}
+                    px={"1.5em"}
+                    mt={"0.5em"}
+                    className={"courseContent"}
+                  >
+                    <ReactMarkdown
+                      children={list.materials}
+                      remarkPlugins={[remarkGfm]}
+                    />
                   </Text>
 
-                  <Heading fontWeight={600} mt={"1em"} fontSize={"24px"}>
+                  <Heading
+                    color={"white"}
+                    fontWeight={600}
+                    mt={"1em"}
+                    fontSize={"24px"}
+                  >
                     Questions
                   </Heading>
-                  <Box pl={"1.5em"} mt={"0.5em"}>
-                    <ReactMarkdown>{list.questions}</ReactMarkdown>
+                  <Divider />
+                  <Box px={"1.5em"} mt={"0.5em"} className={"courseContent"}>
+                    <ReactMarkdown
+                      children={list.questions}
+                      remarkPlugins={[remarkGfm]}
+                    />
                   </Box>
                 </Box>
               );

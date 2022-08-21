@@ -1,0 +1,139 @@
+.courseContent p {
+  display: block;
+  margin-top: 1em;
+  margin-bottom: 1em !important;
+  font-size: 18px;
+  margin-left: 0;
+  margin-right: 0;
+  font-family: "Montserrat" !important;
+  color: white;
+}
+
+.courseContent h1 {
+  display: block;
+  font-size: 2em;
+  margin-top: 0.67em;
+  margin-bottom: 0.67em;
+  margin-left: 0;
+  margin-right: 0;
+  font-weight: bold;
+  color: white;
+  font-family: "Montserrat" !important;
+}
+.courseContent h2 {
+  display: block;
+  font-size: 1.5em;
+  margin-top: 0.83em;
+  margin-bottom: 0.83em;
+  margin-left: 0;
+  margin-right: 0;
+  font-weight: bold;
+  color: white;
+  font-family: "Montserrat" !important;
+}
+.courseContent h3 {
+  display: block;
+  font-size: 1.1em;
+  margin-top: 1em;
+  margin-bottom: 1em;
+  margin-left: 0;
+  margin-right: 0;
+  color: white;
+  font-weight: bold;
+  font-family: "Montserrat" !important;
+}
+.courseContent h4 {
+  display: block;
+  margin-top: 1.33em;
+  margin-bottom: 1.33em;
+  margin-left: 0;
+  margin-right: 0;
+  font-weight: bold;
+  color: white;
+  font-family: "Montserrat" !important;
+}
+.courseContent h5 {
+  display: block;
+  font-size: 0.83em;
+  margin-top: 1.67em;
+  margin-bottom: 1.67em;
+  margin-left: 0;
+  margin-right: 0;
+  font-weight: bold;
+  color: white;
+  font-family: "Montserrat" !important;
+}
+.courseContent h6 {
+  display: block;
+  font-size: 0.67em;
+  margin-top: 2.33em;
+  margin-bottom: 2.33em;
+  margin-left: 0;
+  margin-right: 0;
+  color: white;
+  font-weight: bold;
+  font-family: "Montserrat" !important;
+}
+.courseContent ul {
+  margin-top: 1em;
+  margin-bottom: 1em;
+  list-style: disc outside none;
+}
+
+.courseContent li {
+  margin-left: 2em;
+  display: list-item;
+  text-align: -webkit-match-parent;
+  padding-top: 10px;
+  font-size: 16px;
+  color: white;
+  font-family: "Montserrat" !important;
+}
+.courseContent blockquote {
+  display: block;
+  background: rgba(245, 245, 245, 0.259);
+  margin-top: 2em;
+  border-left: 10px solid #e4e7eb81;
+  margin-bottom: 2em;
+  margin-left: 40px;
+  margin-right: 40px;
+  padding: 0.1em 10px;
+  align-items: center;
+  font-size: 50%;
+}
+.courseContent code {
+  border-radius: 0.25rem;
+  font-weight: 400 !important;
+  padding: 0.25rem;
+  font-size: 75%;
+  background: #f0efed83;
+}
+.courseContent img {
+  margin: 2em auto;
+  border-radius: 10px;
+}
+.courseContent hr {
+  margin: 2em auto;
+}
+.courseContent a {
+  text-decoration: underline !important;
+}
+.courseContent pre {
+  color: black !important;
+  background: #f0efed38;
+  overflow-x: auto;
+  line-height: 1.75;
+  margin-top: 2em;
+  margin-bottom: 2em;
+  border-radius: 0.375rem;
+  font-size: 20px;
+  padding-top: 1em;
+  padding-right: 1.5em;
+  padding-bottom: 1em;
+  padding-left: 1.5em;
+}
+.courseContent pre code {
+  background: transparent;
+  color: white;
+  font-weight: 500 !important;
+}

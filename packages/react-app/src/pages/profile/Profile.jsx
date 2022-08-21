@@ -65,7 +65,7 @@ function Profile() {
     <>
       <Navbar />
 
-      <Container maxW={"1100px"} my={"4em"}>
+      <Container maxW={"1100px"} my={"4em"} pb={"5em"}>
         <Box
           className="glass-ui-2"
           borderColor={"transparent"}
@@ -167,7 +167,7 @@ function Profile() {
                 Courses Enrolled
               </Heading>
               <Divider />
-              <Box>
+              <Box pb={"1em"}>
                 <ECourses />
               </Box>
             </GridItem>

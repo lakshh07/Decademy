@@ -302,7 +302,7 @@ function Courses() {
                                     color={"#888888"}
                                     my={"1rem"}
                                   >
-                                    {`${list.description.substring(0, 100)}...`}
+                                    {`${list.description.substring(0, 80)}...`}
                                   </Text>
                                   <Flex
                                     borderWidth={"2px"}

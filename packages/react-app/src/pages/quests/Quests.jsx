@@ -70,7 +70,11 @@ function Courses() {
   });
 
   useEffect(() => {
-    setLength(fetchData?.length);
+    setLength(
+      fetchData?.filter((list) => {
+        return list.questId;
+      }).length
+    );
   }, [isFetching]);
 
   async function fetchOwner() {

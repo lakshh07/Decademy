@@ -110,8 +110,12 @@ function Podcasts() {
   };
 
   const playOnSelect = (song, index) => {
+    const newList = song.filter((list) => {
+      return list.id;
+    });
+
     try {
-      document.querySelector("#audio-element").src = `${song[0][index].music}`;
+      document.querySelector("#audio-element").src = `${newList[index].music}`;
       document.querySelector("#audio-element").play();
     } catch (e) {
       console.log(e);

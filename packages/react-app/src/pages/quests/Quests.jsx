@@ -208,6 +208,7 @@ function Courses() {
                   ?.filter((list) => {
                     return list.questId;
                   })
+                  .reverse()
                   .map((list, index) => {
                     return (
                       <GridItem key={index}>

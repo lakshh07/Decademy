@@ -110,9 +110,11 @@ function Podcasts() {
   };
 
   const playOnSelect = (song, index) => {
-    const newList = song.filter((list) => {
-      return list.id;
-    });
+    const newList = song
+      .filter((list) => {
+        return list.id;
+      })
+      .reverse();
 
     try {
       document.querySelector("#audio-element").src = `${newList[index].music}`;
@@ -311,6 +313,7 @@ function Podcasts() {
                   ?.filter((list) => {
                     return list.id;
                   })
+                  .reverse()
                   .map((list, index) => {
                     return (
                       <GridItem key={index}>
